@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Monitoring Stok</h2>
+</div>
+
+<div class="split-layout">
+
+    <!-- ================= LEFT SIDE (FILTER) ================= -->
+    <div class="split-left">
+        <div class="card center-filter-card">
+
+            <form method="GET" class="center-filter-form">
+
+                <label>Pilih Lokasi</label>
+
+                <select name="cabang" required class="filter-select">
+                    <option value="" disabled {% if not cabang %}selected{% endif %}>
+                        Silahkan filter lokasi yang ingin dilihat
+                    </option>
+
+                    <option value="Pusat" {% if cabang =="Pusat" %}selected{% endif %}>
+                        Pusat
+                    </option>
+
+                    <option value="Tuban" {% if cabang =="Tuban" %}selected{% endif %}>
+                        Tuban
+                    </option>
+
+                    <option value="Mahendradatta" {% if cabang =="Mahendradatta" %}selected{% endif %}>
+                        Mahendradatta
+                    </option>
+                </select>
+
+                <button type="submit">Tampilkan Data</button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ================= RIGHT SIDE (DATA) ================= -->
+    <div class="split-right">
+
+        {% if cabang %}
+
+        <!-- ================= SUMMARY CARD (UPGRADED) ================= -->
+        <div class="monitor-summary">
+
+            <div class="summary-container">
+
+                <div class="summary-card">
+                    <p>Total Material</p>
+                    <h3>{{ data|length }}</h3>
+                </div>
+
+                <div class="summary-card">
+                    <p>Total Kubikasi</p>
+                    <h3>
+                        {{ "%.2f"|format(data|sum(attribute='total_kubik') if data else 0) }} m³
+                    </h3>
+                </div>
+
+                <div class="summary-card">
+                    <p>Lokasi</p>
+                    <h3>{{ cabang }}</h3>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= TABLE ================= -->
+        <div class="card">
+
+            <div style="display:flex; align-items:center; margin-bottom:15px;">
+
+                <div style="flex:1;"></div>
+
+                <h3 style="flex:1; text-align:center; margin:0;">
+                    Stok {{ cabang }}
+                </h3>
+
+                <div style="flex:1; text-align:right;">
+                    {% if cabang == "Pusat" %}
+                    <a href="{{ url_for('tambah_stok') }}" class="btn-primary">
+                        + Tambah Stok
+                    </a>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Material</th>
+                            <th>Total Kubikasi (m³)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for s in data %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+
+                            <td>
+                                {% for m in materials %}
+                                    {% if m.id == s.material_id %}
+                                        {{ m.nama }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ "%.2f"|format(s.total_kubik or 0) }}
+                                </strong> m³
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        {% if not data %}
+                        <tr>
+                            <td colspan="3" style="text-align:center; padding:20px;">
+                                Tidak ada data stok untuk lokasi ini.
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% else %}
+
+        <!-- ================= EMPTY STATE ================= -->
+        <div class="card empty-center-card improved-empty">
+            <div class="empty-content">
+                <div class="empty-icon">📊</div>
+                <h3>Belum ada data ditampilkan</h3>
+                <p>
+                    Silahkan pilih lokasi cabang pada filter di sebelah kiri
+                    untuk melihat data stok material.
+                </p>
+            </div>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

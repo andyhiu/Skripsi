@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card">
+    <h2>Laporan Cabang</h2>
+
+    <form method="GET">
+        <select name="cabang" required>
+            <option value="Tuban">Tuban</option>
+            <option value="Mahendradatta">Mahendradatta</option>
+        </select>
+
+        <input type="date" name="tanggal" required>
+        <button type="submit" class="btn-primary">Tampilkan</button>
+    </form>
+</div>
+
+{% if laporan %}
+
+<div class="card">
+    <h3>Detail Laporan</h3>
+    <p><strong>Cabang:</strong> {{ laporan.cabang }}</p>
+    <p><strong>Tanggal:</strong> {{ laporan.tanggal }}</p>
+</div>
+
+<div class="card">
+    <h3>Detail Transaksi</h3>
+
+    <table class="table">
+        <tr>
+            <th>No</th>
+            <th>Jenis Truck</th>
+            <th>Kubikasi</th>
+            <th>Metode</th>
+            <th>Total</th>
+        </tr>
+
+        {% for t in transaksi %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ t.jenis_truck }}</td>
+            <td>{{ t.kubikasi }} m³</td>
+            <td>{{ t.metode }}</td>
+            <td>Rp {{ "{:,.0f}".format(t.total).replace(",", ".") }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="card">
+    <h3>Detail Pengeluaran</h3>
+
+    <div class="table-wrapper">
+    <table class="table">
+        <tr>
+            <th>No</th>
+            <th>Keterangan</th>
+            <th>Jumlah</th>
+        </tr>
+
+        {% for p in pengeluaran %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ p.keterangan }}</td>
+            <td>Rp {{ "{:,.0f}".format(p.jumlah).replace(",", ".") }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="card summary">
+    <h3>Total Pemasukan:
+        Rp {{ "{:,.0f}".format(laporan.total_pemasukan).replace(",", ".") }}
+    </h3>
+
+    <h3>Total Pengeluaran:
+        Rp {{ "{:,.0f}".format(laporan.total_pengeluaran).replace(",", ".") }}
+    </h3>
+</div>
+
+<div class="card">
+    <a href="{{ url_for('laporan_pdf', cabang=laporan.cabang, tanggal=laporan.tanggal) }}">
+        <button class="btn-primary">Generate PDF</button>
+    </a>
+</div>
+
+{% endif %}
+
+{% endblock %}
+</table>
+</div>

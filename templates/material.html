@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>Kelola Material</h2>
+</div>
+
+<div class="split-layout">
+
+    <!-- ================= LEFT SIDE (FORM) ================= -->
+    <div class="split-left">
+        <div class="form-box">
+            <form method="POST" class="form-grid">
+
+                <div>
+                    <label>Nama Material</label>
+                    <input type="text" name="nama" required>
+                </div>
+
+                <div>
+                    <label>Harga</label>
+                    <input type="number" name="harga" min="0" step="1" required>
+                </div>
+
+                <div class="full button-wrapper">
+                    <button type="submit">Tambah Material</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= RIGHT SIDE (TABLE) ================= -->
+    <div class="split-right">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Harga</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in data %}
+                        <tr>
+                            <td data-label="Nama">{{ m.nama }}</td>
+
+                            <td data-label="Harga">
+                                Rp {{ "{:,.0f}".format(m.harga).replace(",", ".") }}
+                            </td>
+
+                            <td data-label="Aksi" class="aksi-cell">
+
+                                <div class="aksi-wrapper">
+                                    <a href="{{ url_for('edit_material', id=m.id) }}" class="btn-edit">
+                                        ✏ Edit
+                                    </a>
+
+                                    <a href="#"
+                                       class="btn-delete"
+                                       data-id="{{ m.id }}"
+                                       onclick="openDeleteModal(this)">
+                                        🗑 Hapus
+                                    </a>
+                                </div>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block modal %}
+
+<div id="deleteModal" class="custom-modal">
+    <div class="modal-content">
+        <h3>⚠ Konfirmasi Hapus</h3>
+        <p>Yakin ingin menghapus material ini?</p>
+
+        <div class="modal-actions">
+            <button type="button" onclick="closeDeleteModal()" class="btn-cancel">
+                Batal
+            </button>
+
+            <a id="confirmDeleteBtn" class="btn-delete">
+                Ya, Hapus
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDeleteModal(element) {
+    const materialId = element.getAttribute("data-id");
+    document.getElementById("confirmDeleteBtn").href = "/delete_material/" + materialId;
+    document.getElementById("deleteModal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+    document.getElementById("deleteModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("deleteModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+{% endblock %}

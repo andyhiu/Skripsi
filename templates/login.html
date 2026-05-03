@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Sistem Material</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script>
+        if(localStorage.getItem("darkMode") === "enabled"){
+            document.documentElement.classList.add("dark-mode");
+        }
+    </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-body-modern">
+
+<script>
+    if(localStorage.getItem("darkMode") === "enabled"){
+        document.body.classList.add("dark-mode");
+    }
+</script>
+
+<div class="login-wrapper-modern">
+
+    <!-- LEFT SIDE -->
+    <div class="login-left-modern">
+        <div class="left-content">
+            <h1>Sistem Material</h1>
+
+            <p class="company">
+                PT Sampurna Abadi Makmur
+            </p>
+
+            <p class="desc">
+                Sistem monitoring dan pengelolaan material terintegrasi
+                untuk meningkatkan efisiensi operasional perusahaan.
+            </p>
+
+            <span class="copyright">
+                © 2026 PT Sampurna Abadi Makmur
+            </span>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="login-right-modern">
+
+        <div class="login-form-box">
+
+            <h2>Login Account</h2>
+            <p class="sub">Silakan masuk ke sistem</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="login-alert">
+                        {% for msg in messages %}
+                            <p>{{ msg }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+
+                <div class="form-group">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="login-btn-modern">
+                    Login
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

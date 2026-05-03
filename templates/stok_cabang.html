@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+
+    <div class="page-header">
+        <h2>Stok Cabang {{ cabang }}</h2>
+    </div>
+
+    <div class="card">
+
+        <div class="table-wrapper">
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Material</th>
+                        <th>Total Kubikasi (m³)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for d in data %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+
+                    <td>
+                        {% for m in materials %}
+                            {% if m.id == d.material_id %}
+                                {{ m.nama }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td>{{ "%.2f"|format(d.total_kubik) }} m³</td>
+                </tr>
+                {% endfor %}
+
+                {% if data|length == 0 %}
+                <tr>
+                    <td colspan="3" style="text-align:center;">
+                        Belum ada stok
+                    </td>
+                </tr>
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Transaksi Penjualan - {{ current_user.cabang }}</h2>
+
+<div class="form-box">
+<form method="POST">
+
+    <label>Material</label>
+    <select name="material" required>
+        {% for m in materials %}
+        <option value="{{ m.id }}">
+            {{ m.nama }} - Rp {{ m.harga }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Jumlah</label>
+    <input type="number" name="jumlah" required>
+
+    <label>Metode Pembayaran</label>
+    <select name="metode">
+        <option value="Cash">Cash</option>
+        <option value="Transfer">Transfer</option>
+    </select>
+
+    <button type="submit">Simpan Transaksi</button>
+</form>
+</div>
+
+<h3>Daftar Transaksi</h3>
+
+<table>
+<tr>
+    <th>No</th>
+    <th>Material</th>
+    <th>Metode</th>
+    <th>Jumlah</th>
+    <th>Total</th>
+</tr>
+
+{% for t in data %}
+<tr>
+    <td>{{ loop.index }}</td>
+    <td>
+        {% for m in materials %}
+            {% if m.id == t.material_id %}
+                {{ m.nama }}
+            {% endif %}
+        {% endfor %}
+    </td>
+    <td>{{ t.metode }}</td>
+    <td>{{ t.jumlah }}</td>
+    <td>Rp {{ t.total }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

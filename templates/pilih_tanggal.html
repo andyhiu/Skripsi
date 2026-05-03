@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- ================= HEADER ================= -->
+<div class="laporan-header">
+    <h2>Buat Laporan Harian</h2>
+
+    <p>
+        Cabang : <strong>{{ cabang }}</strong>
+    </p>
+
+    <p>
+        Pilih tanggal untuk membuat atau melanjutkan laporan transaksi
+        dan pengeluaran pada cabang Anda.
+    </p>
+</div>
+
+
+<!-- ================= MAIN CARD ================= -->
+<div class="laporan-tanggal-wrapper">
+
+    <div class="laporan-tanggal-card">
+
+        <div class="tanggal-icon">
+            📅
+        </div>
+
+        <h3 class="tanggal-title">
+            Pilih Tanggal Laporan
+        </h3>
+
+        <p class="tanggal-desc">
+            Laporan harian digunakan untuk mencatat transaksi
+            material dan pengeluaran operasional pada tanggal tertentu.
+        </p>
+
+        <form method="GET"
+              action="{{ url_for('laporan_cabang') }}"
+              class="laporan-tanggal-form">
+
+            <div class="tanggal-input-group">
+
+                <label class="center-label">Tanggal Laporan</label>
+
+                <input type="text"
+                       name="tanggal"
+                       class="datepicker tanggal-input"
+                       value="{{ today }}"
+                       required>
+
+                <small class="tanggal-helper">
+                    Pilih tanggal laporan yang ingin dibuat atau dilanjutkan
+                </small>
+
+            </div>
+
+            <button type="submit" class="btn-primary mulai-btn">
+                Mulai Laporan
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ================= INFO BOX ================= -->
+<div class="laporan-info-box">
+
+    <h4>Informasi</h4>
+
+    <ul>
+        <li>Setiap tanggal hanya memiliki satu laporan.</li>
+        <li>Jika laporan sudah dibuat sebelumnya, sistem akan membuka laporan tersebut.</li>
+        <li>Laporan akan dikunci setelah ditutup.</li>
+    </ul>
+
+</div>
+
+{% endblock %}

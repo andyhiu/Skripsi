@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Tambah Stok Pusat</h2>
+</div>
+
+<div class="split-layout">
+
+<!-- ================= LEFT SIDE ================= -->
+<div class="split-left">
+
+<div class="form-box">
+
+<h3 style="margin-bottom:20px;">Input Stok Baru</h3>
+
+<form method="POST" class="form-grid">
+
+<div>
+<label>Material</label>
+
+<select name="material" required>
+
+{% for m in materials %}
+
+<option value="{{ m.id }}">
+{{ m.nama }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div>
+
+<label>Jumlah Stok (m³)</label>
+
+<input type="number"
+step="0.01"
+name="jumlah"
+min="0.01"
+required>
+
+</div>
+
+<div class="full button-wrapper">
+
+<button type="submit">
+
+Tambah Stok
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- ================= RIGHT SIDE ================= -->
+
+<div class="split-right">
+
+<div class="card">
+
+<h3 style="margin-bottom:20px;">
+
+Stok Pusat Saat Ini
+
+</h3>
+
+<div class="table-responsive">
+
+<table class="premium-table">
+
+<thead>
+
+<tr>
+
+<th>No</th>
+
+<th>Material</th>
+
+<th>Total Kubikasi</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for s in data %}
+
+<tr>
+
+<td>
+
+{{ loop.index }}
+
+</td>
+
+<td>
+
+{% for m in materials %}
+
+{% if m.id == s.material_id %}
+
+{{ m.nama }}
+
+{% endif %}
+
+{% endfor %}
+
+</td>
+
+<td>
+
+<strong>
+
+{{ "%.2f"|format(s.total_kubik) }}
+
+</strong>
+
+m³
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+{% if not data %}
+
+<tr>
+
+<td colspan="3"
+
+style="text-align:center;padding:20px;">
+
+Belum ada stok pusat.
+
+</td>
+
+</tr>
+
+{% endif %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

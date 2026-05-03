@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistem Material</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script>
+        (function () {
+            const dark = localStorage.getItem("darkMode") === "enabled";
+            const root = document.documentElement;
+
+            if (dark) {
+                root.classList.add("dark-mode");
+                root.style.backgroundColor = "#0f172a";
+            } else {
+                root.classList.remove("dark-mode");
+                root.style.backgroundColor = "#f4f6f9";
+            }
+        })();
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+
+    <div class="nav-left">
+        <div class="burger" onclick="toggleMenu()">☰</div>
+    </div>
+
+    <div class="nav-center">
+        SISTEM MATERIAL PT SAMPURNA ABADI MAKMUR
+    </div>
+
+    <div class="menu" id="navMenu">
+
+        <div class="mobile-header">
+            <span>Menu</span>
+            <button class="close-btn" onclick="toggleMenu()">✕</button>
+        </div>
+
+        {% if current_user.is_authenticated %}
+
+        <div class="mobile-profile" onclick="openProfilePanel(); toggleMenu();">
+            <div class="mobile-profile-avatar">👤</div>
+            <div class="mobile-profile-text">
+                <div class="mobile-username">{{ current_user.username }}</div>
+                <div class="mobile-role">
+                    {{ current_user.role|capitalize }} - {{ current_user.cabang }}
+                </div>
+            </div>
+        </div>
+
+        <a href="/dashboard"
+           class="{% if request.path.startswith('/dashboard') %}active{% endif %}">
+           Dashboard
+        </a>
+
+        {% if current_user.role == "admin" %}
+
+            <a href="/user"
+               class="{% if request.path.startswith('/user') %}active{% endif %}">
+               User
+            </a>
+
+            <a href="/material"
+               class="{% if request.path.startswith('/material') %}active{% endif %}">
+               Material
+            </a>
+
+            <a href="/kirim"
+               class="{% if request.path.startswith('/kirim') %}active{% endif %}">
+               Kirim Stok
+            </a>
+
+            <a href="/monitor_stok"
+               class="{% if request.path.startswith('/monitor_stok') %}active{% endif %}">
+               Monitoring Stok
+            </a>
+
+            <a href="/laporan"
+               class="{% if request.path.startswith('/laporan') %}active{% endif %}">
+               Laporan
+            </a>
+
+        {% elif current_user.role == "cabang" %}
+
+            <a href="/konfirmasi_stok"
+               class="notif-link {% if request.path.startswith('/konfirmasi_stok') %}active{% endif %}">
+                Konfirmasi Stok
+                {% if notifikasi_stok > 0 %}
+                    <span class="badge">{{ notifikasi_stok }}</span>
+                {% endif %}
+            </a>
+
+            <a href="/stok_cabang"
+               class="{% if request.path.startswith('/stok_cabang') %}active{% endif %}">
+               Stok
+            </a>
+
+            <a href="/laporan_cabang"
+               class="{% if request.path.startswith('/laporan_cabang') %}active{% endif %}">
+               Laporan Harian
+            </a>
+
+        {% endif %}
+
+        {% endif %}
+    </div>
+
+    {% if current_user.is_authenticated %}
+    <div class="nav-profile">
+        <div class="profile-badge" onclick="openProfilePanel()">
+            <div class="profile-icon">
+                👤︎
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="profile-overlay" id="profileOverlay" onclick="closeProfilePanel()"></div>
+
+{% if current_user.is_authenticated %}
+<div class="profile-panel" id="profilePanel">
+
+    <div class="profile-header">
+        <h3>Detail</h3>
+        <button onclick="closeProfilePanel()">✕</button>
+    </div>
+
+    <div class="profile-content">
+
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ current_user.username }}</p>
+            <p><strong>Role:</strong> {{ current_user.role|capitalize }}</p>
+            <p><strong>Cabang:</strong> {{ current_user.cabang }}</p>
+        </div>
+
+        <hr style="margin:20px 0; border-color:rgba(255,255,255,0.1);">
+
+        <form action="/reset_password" method="POST" class="reset-form">
+            <input type="password" name="old_password" placeholder="Password Lama" required>
+            <input type="password" name="new_password" placeholder="Password Baru" required>
+            <button type="submit">Reset Password</button>
+        </form>
+
+        <div style="margin-top:25px;">
+            <a href="/logout"
+               style="display:block; text-align:center; padding:10px; border-radius:8px;
+                      background:linear-gradient(135deg,#dc3545,#a71d2a);
+                      color:white; text-decoration:none;">
+                Logout
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div class="toast-container">
+            {% for category, message in messages %}
+                <div class="toast toast-{{ category }}">
+                    <div class="toast-content">
+                        <span class="toast-icon">
+                            {% if category == 'success' %}✔{% endif %}
+                            {% if category == 'danger' %}⚠{% endif %}
+                            {% if category == 'warning' %}⚠{% endif %}
+                            {% if category == 'info' %}ℹ{% endif %}
+                        </span>
+                        <span class="toast-message">{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+{% block modal %}{% endblock %}
+
+<div class="theme-toggle">
+    <input type="checkbox" id="themeSwitch">
+    <label for="themeSwitch" class="toggle-slider"></label>
+</div>
+
+<!-- 🔥 FLOATING NOTIF (TAMBAHAN SAJA, TIDAK MENGHAPUS APA PUN) -->
+{% if current_user.is_authenticated %}
+
+    {% if current_user.role == "cabang" and stok_menipis %}
+    <div class="floating-alert">
+        <div class="floating-header">
+            ⚠ Stok Menipis
+            <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">×</span>
+        </div>
+        <ul>
+            {% for s, nama in stok_menipis %}
+            <li>{{ nama }} - {{ "%.2f"|format(s.total_kubik) }} m³</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if current_user.role == "admin" and stok_menipis_all %}
+    <div class="floating-alert">
+        <div class="floating-header">
+            ⚠ Stok Menipis Cabang
+            <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">×</span>
+        </div>
+        <ul>
+            {% for s, nama in stok_menipis_all %}
+            <li>{{ s.lokasi }} → {{ nama }} ({{ "%.2f"|format(s.total_kubik) }} m³)</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const switchInput = document.getElementById("themeSwitch");
+    const root = document.documentElement;
+
+    if(localStorage.getItem("darkMode") === "enabled"){
+        root.classList.add("dark-mode");
+        document.body.classList.add("dark-mode");
+        root.style.backgroundColor = "#0f172a";
+        switchInput.checked = true;
+    }
+
+    switchInput.addEventListener("change", function() {
+        if(this.checked){
+            root.classList.add("dark-mode");
+            document.body.classList.add("dark-mode");
+            root.style.backgroundColor = "#0f172a";
+            localStorage.setItem("darkMode","enabled");
+        } else {
+            root.classList.remove("dark-mode");
+            document.body.classList.remove("dark-mode");
+            root.style.backgroundColor = "#f4f6f9";
+            localStorage.setItem("darkMode","disabled");
+        }
+    });
+
+    document.querySelectorAll("select").forEach(function(el){
+        new TomSelect(el,{
+            create: false,
+            searchField: [],
+            controlInput: null
+        });
+    });
+
+    document.querySelectorAll(".datepicker").forEach(function(el){
+        el.setAttribute("readonly", true);
+        flatpickr(el, {
+            dateFormat: "Y-m-d",
+            allowInput: false,
+            clickOpens: true
+        });
+    });
+
+});
+
+setTimeout(function(){
+    const toasts = document.querySelectorAll(".toast");
+    toasts.forEach(function(toast){
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-20px)";
+        setTimeout(function(){
+            toast.remove();
+        }, 300);
+    });
+}, 3500);
+
+function toggleMenu() {
+    document.getElementById("navMenu").classList.toggle("active");
+    document.getElementById("overlay").classList.toggle("active");
+}
+
+function openProfilePanel(){
+    document.getElementById("profilePanel").classList.add("active");
+    document.getElementById("profileOverlay").classList.add("active");
+}
+
+function closeProfilePanel(){
+    document.getElementById("profilePanel").classList.remove("active");
+    document.getElementById("profileOverlay").classList.remove("active");
+}
+</script>
+
+</body>
+</html>

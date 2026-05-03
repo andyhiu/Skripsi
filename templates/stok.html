@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Input Stok Pusat</h2>
+
+<form method="POST" class="form-box">
+    <select name="material">
+        {% for m in materials %}
+        <option value="{{ m.id }}">{{ m.nama }}</option>
+        {% endfor %}
+    </select>
+    <input type="number" name="jumlah" placeholder="Jumlah">
+    <button type="submit">Tambah Stok</button>
+</form>
+
+{% endblock %}

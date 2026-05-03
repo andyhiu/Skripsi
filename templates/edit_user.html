@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Edit User</h2>
+</div>
+
+<div class="form-container">
+    <div class="form-box">
+        <form method="POST" class="form-grid">
+
+            <div>
+                <label>Username</label>
+                <input type="text" name="username" value="{{ user.username }}" required>
+            </div>
+
+            <div>
+                <label>Password</label>
+                <input type="text" name="password" value="{{ user.password }}" required>
+            </div>
+
+            <div>
+                <label>Role</label>
+                <select name="role">
+                    <option value="admin" {% if user.role =="admin" %}selected{% endif %}>Admin</option>
+                    <option value="cabang" {% if user.role =="cabang" %}selected{% endif %}>Cabang</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Cabang</label>
+                <select name="cabang">
+                    <option value="Pusat" {% if user.cabang =="Pusat" %}selected{% endif %}>Pusat</option>
+                    <option value="Tuban" {% if user.cabang =="Tuban" %}selected{% endif %}>Tuban</option>
+                    <option value="Mahendradatta" {% if user.cabang =="Mahendradatta" %}selected{% endif %}>Mahendradatta</option>
+                </select>
+            </div>
+
+            <div class="full button-wrapper">
+                <button type="submit">Update User</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

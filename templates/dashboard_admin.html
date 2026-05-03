@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="dashboard-admin-wrapper">
+
+    <div class="dashboard-header">
+        <h2>Dashboard Admin Pusat</h2>
+        <p>Ringkasan Keuangan Sistem</p>
+    </div>
+
+    <!-- FILTER -->
+    <div class="dashboard-topbar">
+
+        <div class="cabang-filter">
+            <a href="{{ url_for('dashboard') }}"
+               class="filter-btn {% if not cabang_filter %}active-filter{% endif %}">
+                Semua
+            </a>
+
+            <a href="{{ url_for('dashboard', cabang='Tuban', bulan=bulan_input) }}"
+               class="filter-btn {% if cabang_filter == 'Tuban' %}active-filter{% endif %}">
+                Tuban
+            </a>
+
+            <a href="{{ url_for('dashboard', cabang='Mahendradatta', bulan=bulan_input) }}"
+               class="filter-btn {% if cabang_filter == 'Mahendradatta' %}active-filter{% endif %}">
+                Mahendradatta
+            </a>
+        </div>
+
+        <form method="GET" class="grafik-filter-form">
+            <input type="month" name="bulan" value="{{ bulan_input }}" class="month-input">
+            <button type="submit" class="filter-submit">Filter</button>
+        </form>
+
+    </div>
+
+    <!-- CARD -->
+    <div class="dashboard-cards">
+
+        <div class="stat-card blue">
+            <h4>Total Pemasukan</h4>
+            <h2>Rp {{ "{:,.0f}".format(total_pemasukan).replace(",", ".") }}</h2>
+        </div>
+
+        <div class="stat-card red">
+            <h4>Total Pengeluaran</h4>
+            <h2>Rp {{ "{:,.0f}".format(total_pengeluaran).replace(",", ".") }}</h2>
+        </div>
+
+        <div class="stat-card gray">
+            <h4>Total Laporan</h4>
+            <h2>{{ total_laporan }}</h2>
+        </div>
+
+        <div class="stat-card green">
+            <h4>Profit</h4>
+            <h2>
+                Rp {{ "{:,.0f}".format(total_pemasukan - total_pengeluaran).replace(",", ".") }}
+            </h2>
+        </div>
+
+    </div>
+
+    <!-- MAIN -->
+    <div class="dashboard-main">
+
+        <!-- LEFT -->
+        <div class="left-section">
+
+            <!-- CHART -->
+            <div class="card grafik-card">
+                <h4>Grafik Keuangan</h4>
+                <canvas id="mainChart"></canvas>
+            </div>
+
+            <!-- DOUGHNUT ONLY -->
+            <div class="card">
+                <h4>Distribusi Pemasukan Cabang</h4>
+                <div style="height: 250px; display: flex; justify-content: center; align-items: center;">
+                    <canvas id="cabangChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right-section">
+
+            <!-- RANKING -->
+            <div class="card ranking-card">
+                <h4>Sales Ranking Cabang</h4>
+
+                {% for r in ranking_data %}
+                <div class="ranking-row">
+                    <span class="rank">{{ loop.index }}</span>
+                    <span class="name">{{ r.cabang }}</span>
+                    <span class="amount">
+                        Rp {{ "{:,.0f}".format(r.total).replace(",", ".") }}
+                    </span>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- SUMMARY -->
+            <div class="card side-info">
+                <h4>Ringkasan</h4>
+
+                <div class="summary-row">
+                    <span>Pemasukan</span>
+                    <strong>Rp {{ "{:,.0f}".format(total_pemasukan).replace(",", ".") }}</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Pengeluaran</span>
+                    <strong>Rp {{ "{:,.0f}".format(total_pengeluaran).replace(",", ".") }}</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Profit</span>
+                    <strong>
+                        Rp {{ "{:,.0f}".format(total_pemasukan - total_pengeluaran).replace(",", ".") }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <!-- MATERIAL (PINDAH KE SINI) -->
+            <div class="card">
+                <h4>Daftar Material</h4>
+
+                {% for m in materials %}
+                <div class="list-item">
+                    <span>{{ m.nama }}</span>
+                    <strong>Rp {{ "{:,.0f}".format(m.harga).replace(",", ".") }}</strong>
+                </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const labels = JSON.parse('{{ label_bulan | tojson | safe }}');
+const pemasukan = JSON.parse('{{ pemasukan_per_bulan | tojson | safe }}');
+const pengeluaran = JSON.parse('{{ pengeluaran_per_bulan | tojson | safe }}');
+
+const cabangLabels = JSON.parse('{{ cabang_labels | tojson | safe }}');
+const cabangData = JSON.parse('{{ cabang_totals | tojson | safe }}');
+
+// BAR
+new Chart(document.getElementById('mainChart'), {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [
+            { label: 'Pemasukan', data: pemasukan, backgroundColor: '#1f70d8' },
+            { label: 'Pengeluaran', data: pengeluaran, backgroundColor: '#dc3545' }
+        ]
+    }
+});
+
+// DOUGHNUT
+new Chart(document.getElementById('cabangChart'), {
+    type: 'doughnut',
+    data: {
+        labels: cabangLabels,
+        datasets: [{
+            data: cabangData,
+            backgroundColor: ['#1f70d8', '#28a745', '#ffc107', '#dc3545'],
+            borderWidth: 2,
+            borderColor: '#fff',
+            hoverOffset: 10
+        }]
+    },
+    options: {
+        cutout: '65%',
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+</script>
+
+{% endblock %}

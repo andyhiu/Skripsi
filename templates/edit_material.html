@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Edit Material</h2>
+</div>
+
+<div class="form-container">
+    <div class="form-box">
+        <form method="POST" class="form-grid">
+
+            <div>
+                <label>Nama Material</label>
+                <input type="text" name="nama" value="{{ material.nama }}" required>
+            </div>
+
+            <div>
+                <label>Harga</label>
+                <input type="number" name="harga" value="{{ material.harga }}" min="0" step="1" required>
+            </div>
+
+            <div class="full button-wrapper">
+                <button type="submit">Update Material</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

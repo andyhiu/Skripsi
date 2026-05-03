@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Laporan Cabang</h2>
+
+<form method="GET">
+    <select name="cabang">
+        <option value="Tuban">Tuban</option>
+        <option value="Mahendradatta">Mahendradatta</option>
+    </select>
+
+    <input type="date" name="tanggal" required>
+    <button type="submit">Tampilkan</button>
+</form>
+
+<table>
+<tr>
+    <th>Cabang</th>
+    <th>Tanggal</th>
+    <th>Pemasukan</th>
+    <th>Pengeluaran</th>
+    <th>Aksi</th>
+</tr>
+
+{% for l in data %}
+<tr>
+    <td>{{ l.cabang }}</td>
+    <td>{{ l.tanggal }}</td>
+    <td>Rp {{ "{:,.0f}".format(l.total_pemasukan).replace(",", ".") }}</td>
+    <td>Rp {{ "{:,.0f}".format(l.total_pengeluaran).replace(",", ".") }}</td>
+    <td>
+        <a href="/laporan_pdf?cabang={{ l.cabang }}&tanggal={{ l.tanggal }}">
+            <button>PDF</button>
+        </a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+/* HERO */
+.branch-hero {
+    background: linear-gradient(135deg, #0d3b66, #1a5fa0);
+    color: white;
+    padding: 28px 24px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+}
+
+/* KPI */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.kpi-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #0d3b66;
+}
+
+/* 🔥 NOTIF STOK MENIPIS */
+.alert-stock {
+    background: #fff4e5;
+    border-left: 5px solid #f59e0b;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.alert-stock h4 {
+    margin-bottom: 10px;
+    color: #b45309;
+}
+
+/* LIST */
+.stok-list {
+    padding-left: 20px;
+}
+
+.stok-list li {
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+/* ACTION */
+.action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.action-box {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    transition: 0.25s;
+    text-decoration: none;
+    color: #1e293b;
+}
+
+.action-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* GRID BAWAH */
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* DARK MODE */
+body.dark-mode .kpi-card,
+body.dark-mode .action-box,
+body.dark-mode .card {
+    background: #1e293b;
+    color: #e5e7eb;
+}
+
+body.dark-mode .alert-stock {
+    background: #3f2a00;
+    border-left: 5px solid #facc15;
+}
+
+/* MOBILE */
+@media (max-width: 992px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="dashboard-branch-wrapper">
+
+    <!-- HERO -->
+    <div class="branch-hero">
+        <h2>Dashboard Cabang - {{ current_user.cabang }}</h2>
+        <p>{{ tanggal_hari_ini }} • Aktivitas operasional hari ini</p>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div>
+                <small>Transaksi</small>
+                <h3>{{ transaksi_hari_ini or 0 }}</h3>
+            </div>
+            <div>💰</div>
+        </div>
+
+        <div class="kpi-card">
+            <div>
+                <small>Pengeluaran</small>
+                <h3>{{ pengeluaran_hari_ini or 0 }}</h3>
+            </div>
+            <div>💸</div>
+        </div>
+
+        <div class="kpi-card">
+            <div>
+                <small>Pemasukan</small>
+                <h3>Rp {{ "{:,.0f}".format(total_pemasukan_hari_ini) if total_pemasukan_hari_ini else 0 }}</h3>
+            </div>
+            <div>📈</div>
+        </div>
+
+        <div class="kpi-card">
+            <div>
+                <small>Total Pengeluaran</small>
+                <h3>Rp {{ "{:,.0f}".format(total_pengeluaran_hari_ini) if total_pengeluaran_hari_ini else 0 }}</h3>
+            </div>
+            <div>📉</div>
+        </div>
+    </div>
+
+    <!-- 🔥 NOTIF STOK MENIPIS (FIX ERROR DI SINI) -->
+    {% if stok_menipis and stok_menipis|length > 0 %}
+    <div class="alert-stock">
+        <h4>⚠ Stok Menipis (Di bawah 30 m³)</h4>
+
+        <ul class="stok-list">
+            {% for s in stok_menipis %}
+            <li>
+                <strong>{{ s[1] }}</strong>
+                - {{ "%.2f"|format(s[0].total_kubik) }} m³
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- RINGKASAN -->
+    <div class="card" style="margin-bottom:20px;">
+        <h3>Ringkasan Hari Ini</h3>
+        <p>
+            Hari ini terdapat <strong>{{ transaksi_hari_ini or 0 }}</strong> transaksi
+            dengan pemasukan <strong>Rp {{ "{:,.0f}".format(total_pemasukan_hari_ini) }}</strong>
+            dan pengeluaran <strong>Rp {{ "{:,.0f}".format(total_pengeluaran_hari_ini) }}</strong>.
+        </p>
+    </div>
+
+    <!-- ACTION -->
+    <div class="action-grid">
+
+        <a href="{{ url_for('stok_cabang') }}" class="action-box">
+            <div style="font-size:22px;">📦</div>
+            <strong>Cek Stok</strong>
+            <p>Material cabang</p>
+        </a>
+
+        <a href="{{ url_for('laporan_cabang') }}" class="action-box">
+            <div style="font-size:22px;">📊</div>
+            <strong>Laporan Harian</strong>
+            <p>Input transaksi</p>
+        </a>
+
+    </div>
+
+    <!-- BAWAH -->
+    <div class="bottom-grid">
+
+        <div class="card">
+            <h3>Status Cabang</h3>
+            <p>Cabang: <strong>{{ current_user.cabang }}</strong></p>
+            <p>Status: <span class="badge-success">Aktif</span></p>
+            <p>User: <strong>{{ current_user.username }}</strong></p>
+        </div>
+
+        <div class="card">
+            <h3>Tips Operasional</h3>
+            <ul>
+                <li>Input transaksi harian</li>
+                <li>Catat semua pengeluaran</li>
+                <li>Tutup laporan setiap hari</li>
+                <li>Periksa data sebelum submit</li>
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

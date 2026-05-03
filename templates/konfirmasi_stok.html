@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="konfirmasi-page">
+
+    <!-- HEADER -->
+    <div class="konfirmasi-header">
+        <h2>Konfirmasi Stok - {{ current_user.cabang }}</h2>
+        <p>Halaman ini digunakan untuk mengkonfirmasi stok material yang dikirim dari admin pusat.</p>
+    </div>
+
+
+    {% if data|length == 0 %}
+
+    <!-- EMPTY STATE -->
+    <div class="konfirmasi-empty-wrapper">
+
+        <div class="konfirmasi-empty-card">
+
+            <div class="konfirmasi-empty-icon">
+                📦
+            </div>
+
+            <h3>Belum Ada Pengiriman Stok</h3>
+
+            <p class="empty-desc">
+                Saat ini belum ada pengiriman material dari admin pusat
+                ke cabang <strong>{{ current_user.cabang }}</strong>.
+                Silakan cek kembali nanti ketika ada pengiriman material baru.
+            </p>
+
+            <div class="empty-info-box">
+
+                <h4>Informasi Sistem</h4>
+
+                <ul>
+                    <li>Admin pusat akan mengirim stok melalui halaman <b>Kirim Stok</b></li>
+                    <li>Setelah stok dikirim, data pengiriman akan muncul di halaman ini</li>
+                    <li>Cabang harus melakukan konfirmasi ketika stok sudah diterima</li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <!-- SUMMARY -->
+    <div class="konfirmasi-summary">
+
+        <div class="konfirmasi-summary-card">
+
+            <div class="summary-icon">🚚</div>
+
+            <div class="summary-text">
+                <h4>Total Pengiriman</h4>
+                <h2>{{ data|length }}</h2>
+            </div>
+
+        </div>
+
+        <div class="konfirmasi-summary-card">
+
+            <div class="summary-icon">⏳</div>
+
+            <div class="summary-text">
+                <h4>Status</h4>
+                <h2>Menunggu Konfirmasi</h2>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLE CARD -->
+    <div class="konfirmasi-card">
+
+        <div class="konfirmasi-card-header">
+
+            <h3>Daftar Pengiriman Material</h3>
+
+            <span class="badge-info">
+                {{ data|length }} Pengiriman
+            </span>
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="table konfirmasi-table">
+
+                <thead>
+
+                    <tr>
+                        <th>No</th>
+                        <th>Material</th>
+                        <th>Jumlah (m³)</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for k in data %}
+
+                <tr>
+
+                    <td data-label="No">
+                        {{ loop.index }}
+                    </td>
+
+                    <td data-label="Material">
+
+                        {% for m in materials %}
+                            {% if m.id == k.material_id %}
+                                {{ m.nama }}
+                            {% endif %}
+                        {% endfor %}
+
+                    </td>
+
+                    <td data-label="Jumlah">
+                        {{ k.total_kubik }}
+                    </td>
+
+                    <td data-label="Status">
+
+                        <span class="badge-warning">
+                            {{ k.status }}
+                        </span>
+
+                    </td>
+
+                    <td data-label="Aksi">
+
+                        <a href="{{ url_for('proses_konfirmasi', id=k.id) }}">
+
+                            <button class="btn-primary konfirmasi-btn">
+                                ✔ Konfirmasi
+                            </button>
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

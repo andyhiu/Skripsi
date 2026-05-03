@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Daftar Laporan</h2>
+</div>
+
+<div class="split-layout">
+
+    <!-- ================= LEFT SIDE (FILTER) ================= -->
+    <div class="split-left">
+        <div class="form-box">
+            <form method="GET" class="form-grid">
+
+                <div>
+                    <label>Pilih Tanggal</label>
+                    <input type="text"
+                           name="tanggal"
+                           class="datepicker"
+                           placeholder="Pilih tanggal"
+                           value="{{ tanggal or '' }}">
+                </div>
+
+                <div>
+                    <label>Pilih Cabang</label>
+                    <select name="cabang">
+                        <option value="">-- Semua Cabang --</option>
+                        <option value="Tuban"
+                            {% if cabang =="Tuban" %}selected{% endif %}>
+                            Tuban
+                        </option>
+                        <option value="Mahendradatta"
+                            {% if cabang =="Mahendradatta" %}selected{% endif %}>
+                            Mahendradatta
+                        </option>
+                    </select>
+                </div>
+
+                <div class="full button-wrapper">
+                    <button type="submit">Filter Laporan</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= RIGHT SIDE (TABLE) ================= -->
+    <div class="split-right">
+        <div class="card">
+
+            {% if data %}
+
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Cabang</th>
+                            <th>Tanggal</th>
+                            <th>Total Pemasukan</th>
+                            <th>Total Pengeluaran</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for l in data %}
+                        <tr>
+                            <td>
+                                {{ loop.index + ((pagination.page - 1) * 10) }}
+                            </td>
+
+                            <td>
+                                {{ l.cabang }}
+                            </td>
+
+                            <!-- 🔥 FIX -->
+                            <td style="white-space: nowrap;">
+                                {{ l.tanggal.strftime('%d %b %Y') }}
+                            </td>
+
+                            <!-- 🔥 FIX -->
+                            <td style="white-space: nowrap;">
+                                Rp {{ "{:,.0f}".format(l.total_pemasukan).replace(",", ".") }}
+                            </td>
+
+                            <!-- 🔥 FIX -->
+                            <td style="white-space: nowrap;">
+                                Rp {{ "{:,.0f}".format(l.total_pengeluaran).replace(",", ".") }}
+                            </td>
+
+                            <td>
+                                <a href="{{ url_for('laporan_detail',
+                                         cabang=l.cabang,
+                                         tanggal=l.tanggal.strftime('%Y-%m-%d')) }}"
+                                   class="btn-primary"
+                                   style="text-decoration:none;">
+                                    📄 Lihat Detail
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ================= PAGINATION ================= -->
+            {% if pagination.pages > 1 %}
+            <div class="pagination-modern">
+
+                {% if pagination.has_prev %}
+                    <a href="{{ url_for('laporan',
+                        page=pagination.prev_num,
+                        tanggal=tanggal if tanggal else None,
+                        cabang=cabang if cabang else None) }}">
+                        ← Prev
+                    </a>
+                {% endif %}
+
+                {% for p in range(1, pagination.pages + 1) %}
+                    {% if p == pagination.page %}
+                        <span class="active-page">{{ p }}</span>
+                    {% else %}
+                        <a href="{{ url_for('laporan',
+                            page=p,
+                            tanggal=tanggal if tanggal else None,
+                            cabang=cabang if cabang else None) }}">
+                            {{ p }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                    <a href="{{ url_for('laporan',
+                        page=pagination.next_num,
+                        tanggal=tanggal if tanggal else None,
+                        cabang=cabang if cabang else None) }}">
+                        Next →
+                    </a>
+                {% endif %}
+
+            </div>
+            {% endif %}
+
+            {% else %}
+
+            <div class="empty-state" style="padding:40px 20px;">
+                <div class="empty-icon" style="font-size:40px;">📑</div>
+                <h3 style="margin-top:15px;">Belum ada laporan</h3>
+                <p style="color:#666;">
+                    Gunakan filter di sebelah kiri untuk mencari laporan.
+                </p>
+            </div>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

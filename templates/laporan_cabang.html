@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Laporan Harian - {{ current_user.cabang }}</h2>
+</div>
+
+<div class="split-layout">
+
+    <!-- ================= LEFT SIDE ================= -->
+    <div class="split-left">
+
+        <!-- TANGGAL -->
+        <div class="card" style="margin-bottom:20px;">
+            <h4>Tanggal Laporan: {{ tanggal }}</h4>
+        </div>
+
+        <!-- 🔥 TOTAL PINDAH KE SINI -->
+        <div class="card section-soft" style="margin-bottom:20px;">
+            <h3>Total Pemasukan:
+                Rp {{ "{:,.0f}".format(total_pemasukan).replace(",", ".") }}
+            </h3>
+            <h3>Total Pengeluaran:
+                Rp {{ "{:,.0f}".format(total_pengeluaran).replace(",", ".") }}
+            </h3>
+        </div>
+
+        <!-- INPUT TRANSAKSI -->
+        <div class="form-box" style="margin-bottom:25px;">
+            <h3 style="margin-bottom:20px;">Input Transaksi</h3>
+
+            <form method="POST" class="form-grid">
+
+                <div>
+                    <label>Material</label>
+                    <select name="material" required>
+                        {% for m in materials %}
+                        <option value="{{ m.id }}">
+                            {{ m.nama }} - Rp {{ "{:,.0f}".format(m.harga).replace(",", ".") }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label>Jenis Truck</label>
+                    <select name="jenis_truck" required>
+                        <option value="Dump Truck Besar">Dump Truck Besar</option>
+                        <option value="Dump Truck Kecil">Dump Truck Kecil</option>
+                        <option value="Engkel">Engkel</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Kubikasi (m³)</label>
+                    <input type="number" step="0.01" name="kubikasi" required>
+                </div>
+
+                <div>
+                    <label>Metode Pembayaran</label>
+                    <select name="metode">
+                        <option value="Cash">Cash</option>
+                        <option value="Transfer">Transfer</option>
+                    </select>
+                </div>
+
+                <div class="full button-wrapper">
+                    <button type="submit">Tambah Transaksi</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- INPUT PENGELUARAN -->
+        <div class="form-box" style="margin-bottom:25px;">
+            <h3 style="margin-bottom:20px;">Input Pengeluaran</h3>
+
+            <form method="POST" class="form-grid">
+                <div>
+                    <label>Keterangan</label>
+                    <input type="text" name="keterangan" required>
+                </div>
+
+                <div>
+                    <label>Jumlah</label>
+                    <input type="number" name="jumlah" required>
+                </div>
+
+                <div class="full button-wrapper">
+                    <button type="submit">Tambah Pengeluaran</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 🔥 DATA PENGELUARAN DIPINDAH KE SINI -->
+        <div class="card" style="margin-bottom:25px;">
+            <h3 style="margin-bottom:20px;">Data Pengeluaran</h3>
+
+            {% if pengeluaran %}
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Keterangan</th>
+                            <th>Jumlah</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pengeluaran %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ p.keterangan }}</td>
+                            <td>Rp {{ "{:,.0f}".format(p.jumlah).replace(",", ".") }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="color:#777;">Belum ada pengeluaran.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- ================= RIGHT SIDE ================= -->
+    <div class="split-right">
+
+        <!-- DATA TRANSAKSI -->
+        <div class="card" style="margin-bottom:25px;">
+            <h3 style="margin-bottom:20px;">Data Transaksi</h3>
+
+            {% if transaksi %}
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Material</th>
+                            <th>Truck</th>
+                            <th>Kubikasi</th>
+                            <th>Metode</th>
+                            <th>Total</th>
+                            <th>Nota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transaksi %}
+                        <tr>
+                            <td>{{ (transaksi_pagination.page - 1) * 10 + loop.index }}</td>
+                            <td>{{ t.material.nama }}</td>
+                            <td>{{ t.jenis_truck }}</td>
+                            <td>{{ "%.2f"|format(t.kubikasi) }} m³</td>
+                            <td>{{ t.metode if t.metode else '-' }}</td>
+                            <td>Rp {{ "{:,.0f}".format(t.jumlah).replace(",", ".") }}</td>
+                            <td class="col-nota">
+                                <a href="{{ url_for('nota_transaksi', id=t.id) }}"
+                                   class="btn-nota"
+                                   target="_blank">
+                                    <i class="fas fa-file-invoice"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            {% if transaksi_pagination.pages > 1 %}
+            <div class="pagination-premium">
+
+                {% if transaksi_pagination.has_prev %}
+                <a href="{{ url_for('laporan_cabang', tanggal=tanggal, page_transaksi=transaksi_pagination.prev_num) }}"
+                   class="page-btn">← Prev</a>
+                {% endif %}
+
+                {% for page in transaksi_pagination.iter_pages() %}
+                    {% if page %}
+                        {% if page == transaksi_pagination.page %}
+                            <span class="page-btn active">{{ page }}</span>
+                        {% else %}
+                            <a href="{{ url_for('laporan_cabang', tanggal=tanggal, page_transaksi=page) }}"
+                               class="page-btn">{{ page }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if transaksi_pagination.has_next %}
+                <a href="{{ url_for('laporan_cabang', tanggal=tanggal, page_transaksi=transaksi_pagination.next_num) }}"
+                   class="page-btn">Next →</a>
+                {% endif %}
+
+            </div>
+            {% endif %}
+
+            {% else %}
+            <p style="color:#777;">Belum ada transaksi.</p>
+            {% endif %}
+        </div>
+
+        <!-- TUTUP -->
+        <div class="card" style="text-align:center;">
+            <a href="{{ url_for('tutup_laporan', tanggal=tanggal) }}"
+               class="btn-primary"
+               style="text-decoration:none;">
+                Simpan & Tutup Laporan
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

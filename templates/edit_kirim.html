@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Edit Pengiriman Stok</h2>
+</div>
+
+<div class="form-container">
+    <div class="form-box">
+        <form method="POST" class="form-grid">
+
+            <div>
+                <label>Material</label>
+                <select name="material" required>
+                    {% for m in materials %}
+                    <option value="{{ m.id }}"
+                        {% if m.id == kirim.material_id %}selected{% endif %}>
+                        {{ m.nama }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Cabang</label>
+                <select name="cabang" required>
+                    <option value="Tuban"
+                        {% if kirim.cabang == "Tuban" %}selected{% endif %}>
+                        Tuban
+                    </option>
+                    <option value="Mahendradatta"
+                        {% if kirim.cabang == "Mahendradatta" %}selected{% endif %}>
+                        Mahendradatta
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label>Jumlah Truck</label>
+                <input type="number"
+                       name="jumlah_truck"
+                       value="{{ kirim.jumlah_truck }}"
+                       required>
+            </div>
+
+            <div>
+                <label>Total Kubikasi (m³)</label>
+                <input type="number"
+                       step="0.01"
+                       name="total_kubik"
+                       value="{{ kirim.total_kubik }}"
+                       required>
+            </div>
+
+            <div class="full button-wrapper">
+                <button type="submit">Update Pengiriman</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
