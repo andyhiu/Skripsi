@@ -620,7 +620,11 @@ def laporan_cabang():
         return redirect(url_for('dashboard'))
 
     tanggal = request.args.get('tanggal')
+    edit_id = request.args.get("edit_id")
+    edit_data = None
 
+    if edit_id:
+        edit_data = Keuangan.query.get(edit_id)
     # jika user klik menu laporan tanpa tanggal → reset session
     if not tanggal:
         session.pop("laporan_tanggal", None)
@@ -665,6 +669,72 @@ def laporan_cabang():
 
     # ================= INPUT DATA =================
     if request.method == 'POST':
+
+        edit_id_form = request.form.get("edit_id")
+
+        # ================= MODE EDIT =================
+        if edit_id_form:
+
+            data = Keuangan.query.get(int(edit_id_form))
+
+            if not data:
+                flash("Data tidak ditemukan", "danger")
+                return redirect(url_for('laporan_cabang', tanggal=tanggal))
+
+            # ===== EDIT PEMASUKAN =====
+            if data.tipe == "pemasukan":
+
+                material = Material.query.get(int(request.form['material']))
+                kubikasi = float(request.form['kubikasi'])
+
+                # 🔥 STOK LAMA (balikin dulu)
+                stok_lama = StokCabang.query.filter_by(
+                    material_id=data.material_id,
+                    lokasi=current_user.cabang
+                ).first()
+
+                if stok_lama:
+                    stok_lama.total_kubik += data.kubikasi
+
+                # 🔥 STOK BARU (material yang dipilih sekarang)
+                stok_baru = StokCabang.query.filter_by(
+                    material_id=material.id,
+                    lokasi=current_user.cabang
+                ).first()
+
+                if not stok_baru:
+                    flash("Stok tidak tersedia", "danger")
+                    return redirect(url_for('laporan_cabang', tanggal=tanggal))
+
+                # 🔥 VALIDASI STOK BARU
+                if stok_baru.total_kubik < kubikasi:
+                    flash("Kubikasi melebihi stok tersedia", "danger")
+                    return redirect(url_for('laporan_cabang', tanggal=tanggal))
+
+                # 🔥 POTONG STOK BARU
+                stok_baru.total_kubik -= kubikasi
+
+                harga_per_m3 = material.harga / 4.5
+                total = round(kubikasi * harga_per_m3)
+                total = round(total / 1000) * 1000
+
+                # UPDATE DATA
+                data.material_id = material.id
+                data.jenis_truck = request.form['jenis_truck']
+                data.kubikasi = kubikasi
+                data.jumlah = int(total)
+                data.metode = request.form.get('metode')
+
+            # ===== EDIT PENGELUARAN =====
+            elif data.tipe == "pengeluaran":
+
+                data.keterangan = request.form['keterangan']
+                data.jumlah = float(request.form['jumlah'])
+
+            db.session.commit()
+
+            flash("Data berhasil diupdate", "success")
+            return redirect(url_for('laporan_cabang', tanggal=tanggal))
 
         # ================= PEMASUKAN =================
         if 'material' in request.form:
@@ -747,7 +817,7 @@ def laporan_cabang():
         Keuangan.status.in_(["Draft","Final"])
     ).order_by(Keuangan.id.desc()).paginate(
         page=page_transaksi,
-        per_page=10,
+        per_page=5,
         error_out=False
     )
 
@@ -771,8 +841,39 @@ def laporan_cabang():
         pengeluaran=pengeluaran,
         total_pemasukan=total_pemasukan,
         total_pengeluaran=total_pengeluaran,
+        edit_data=edit_data,
         tanggal=tanggal
     )
+@app.route('/delete_keuangan/<int:id>')
+@login_required
+def delete_keuangan(id):
+
+    data = Keuangan.query.get_or_404(id)
+
+    # 🔥 proteksi: cabang hanya bisa hapus data sendiri
+    if current_user.role == "cabang" and data.cabang != current_user.cabang:
+        return redirect(url_for('dashboard'))
+
+    # 🔥 hanya boleh hapus status Draft
+    if data.status == "Final":
+        flash("Data sudah final, tidak bisa dihapus", "danger")
+        return redirect(request.referrer)
+
+    # ================= BALIKKAN STOK =================
+    if data.tipe == "pemasukan":
+        stok = StokCabang.query.filter_by(
+            material_id=data.material_id,
+            lokasi=data.cabang
+        ).first()
+
+        if stok:
+            stok.total_kubik += data.kubikasi
+
+    db.session.delete(data)
+    db.session.commit()
+
+    flash("Data berhasil dihapus", "success")
+    return redirect(request.referrer)
 # ================= TUTUP LAPORAN =================
 @app.route('/tutup_laporan')
 @login_required

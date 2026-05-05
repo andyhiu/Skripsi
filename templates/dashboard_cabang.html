@@ -151,22 +151,6 @@ body.dark-mode .alert-stock {
         </div>
     </div>
 
-    <!-- 🔥 NOTIF STOK MENIPIS (FIX ERROR DI SINI) -->
-    {% if stok_menipis and stok_menipis|length > 0 %}
-    <div class="alert-stock">
-        <h4>⚠ Stok Menipis (Di bawah 30 m³)</h4>
-
-        <ul class="stok-list">
-            {% for s in stok_menipis %}
-            <li>
-                <strong>{{ s[1] }}</strong>
-                - {{ "%.2f"|format(s[0].total_kubik) }} m³
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-
     <!-- RINGKASAN -->
     <div class="card" style="margin-bottom:20px;">
         <h3>Ringkasan Hari Ini</h3>

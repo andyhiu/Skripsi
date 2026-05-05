@@ -4339,6 +4339,145 @@ body.dark-mode .monitor-summary .summary-card p {
     text-align: center !important;
     width: 100%;
 }
+/* ============================= */
+/* 🔥 BUTTON TUTUP LAPORAN PREMIUM */
+/* ============================= */
+
+.tutup-wrapper {
+    text-align: center;
+}
+
+/* tombol utama */
+.btn-tutup-laporan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: linear-gradient(135deg, #0d3b66, #1a5fa0);
+    color: white;
+
+    padding: 16px 22px;
+    border-radius: 14px;
+    text-decoration: none;
+
+    max-width: 420px;
+    margin: auto;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    box-shadow: 0 8px 18px rgba(13, 59, 102, 0.25);
+    transition: all 0.25s ease;
+}
+
+/* bagian kiri */
+.btn-tutup-laporan .icon {
+    font-size: 22px;
+}
+
+/* text tengah */
+.btn-tutup-laporan .text {
+    flex: 1;
+    text-align: left;
+    margin-left: 12px;
+}
+
+.btn-tutup-laporan .text small {
+    display: block;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* panah kanan */
+.btn-tutup-laporan .arrow {
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+/* hover effect */
+.btn-tutup-laporan:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(13, 59, 102, 0.35);
+}
+
+/* panah geser */
+.btn-tutup-laporan:hover .arrow {
+    transform: translateX(5px);
+}
+
+/* active click */
+.btn-tutup-laporan:active {
+    transform: scale(0.97);
+}
+
+/* ============================= */
+/* 🌙 DARK MODE SUPPORT */
+/* ============================= */
+
+body.dark-mode .btn-tutup-laporan {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+}
+/* ================= TOTAL CARD ================= */
+.total-wrapper {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.total-card {
+    flex: 1;
+    padding: 18px;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    transition: 0.3s;
+}
+
+.total-card:hover {
+    transform: translateY(-3px);
+}
+
+.total-card .label {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.total-card .value {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* HIJAU */
+.total-card.pemasukan {
+    background: linear-gradient(135deg, #28a745, #218838);
+}
+
+/* MERAH */
+.total-card.pengeluaran {
+    background: linear-gradient(135deg, #dc3545, #b02a37);
+}
+
+/* ================= DARK MODE ================= */
+body.dark-mode .total-card.pemasukan {
+    background: linear-gradient(135deg, #198754, #146c43);
+}
+
+body.dark-mode .total-card.pengeluaran {
+    background: linear-gradient(135deg, #c82333, #842029);
+}
+.tutup-wrapper-align {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.tutup-wrapper-align .btn-tutup-laporan {
+    width: 100%;
+    max-width: 100%;
+}
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
