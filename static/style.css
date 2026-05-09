@@ -4478,6 +4478,1293 @@ body.dark-mode .total-card.pengeluaran {
     width: 100%;
     max-width: 100%;
 }
+/* ======================================================
+   KHUSUS PAGE KIRIM STOK
+====================================================== */
+
+.kirim-layout-fix{
+    display: flex;
+    gap: 35px;
+
+    /* TETAP FULL */
+    width: 100%;
+    max-width: 1800px;
+
+    /* GESER KE KIRI */
+    margin-left: -90px;
+
+    align-items: flex-start;
+}
+
+/* LEFT */
+.kirim-layout-fix .split-left{
+    width: 360px;
+    min-width: 360px;
+}
+
+/* RIGHT */
+.kirim-layout-fix .kirim-right-fix{
+    flex: 1;
+}
+
+/* TABLE NORMAL LAGI */
+.kirim-layout-fix .table-responsive{
+    overflow-x: auto;
+}
+
+.kirim-layout-fix .premium-table{
+    width: 100%;
+}
+
+/* ======================================================
+   LAPTOP
+====================================================== */
+
+@media screen and (max-width: 1450px){
+
+    .kirim-layout-fix{
+        margin-left: -70px;
+    }
+
+}
+
+/* ======================================================
+   TABLET
+====================================================== */
+
+@media screen and (max-width: 1100px){
+
+    .kirim-layout-fix{
+        flex-direction: column;
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .kirim-layout-fix .split-left{
+        width: 100%;
+        min-width: 100%;
+    }
+
+}
+/* ======================================================
+   PREMIUM FLOATING STOK ALERT
+====================================================== */
+
+.stok-floating-wrapper{
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 9999;
+
+    display: flex;
+    align-items: flex-end;
+}
+
+/* ======================================================
+   BUTTON
+====================================================== */
+
+.stok-toggle-btn{
+    width: 58px;
+    height: 58px;
+
+    border: none;
+    border-radius: 20px;
+
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+
+    color: white;
+    font-size: 20px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 10px 30px rgba(245, 158, 11, 0.35),
+        inset 0 1px 2px rgba(255,255,255,0.3);
+
+    transition: all 0.35s ease;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+/* GLOW */
+.stok-toggle-btn::before{
+    content: "";
+
+    position: absolute;
+
+    width: 120%;
+    height: 120%;
+
+    background: rgba(255,255,255,0.15);
+
+    top: -120%;
+    left: -120%;
+
+    transform: rotate(25deg);
+
+    transition: 0.6s;
+}
+
+.stok-toggle-btn:hover::before{
+    top: 120%;
+    left: 120%;
+}
+
+/* HOVER */
+.stok-toggle-btn:hover{
+    transform: translateY(-4px) scale(1.03);
+
+    box-shadow:
+        0 14px 35px rgba(245, 158, 11, 0.45),
+        inset 0 1px 2px rgba(255,255,255,0.3);
+}
+
+/* ICON */
+.stok-toggle-btn i{
+    position: relative;
+    z-index: 2;
+}
+
+/* PULSE */
+.stok-toggle-btn{
+    animation: stokPulse 2.5s infinite;
+}
+
+@keyframes stokPulse{
+    0%{
+        box-shadow:
+            0 0 0 0 rgba(245,158,11,0.4),
+            0 10px 30px rgba(245,158,11,0.35);
+    }
+
+    70%{
+        box-shadow:
+            0 0 0 16px rgba(245,158,11,0),
+            0 10px 30px rgba(245,158,11,0.35);
+    }
+
+    100%{
+        box-shadow:
+            0 0 0 0 rgba(245,158,11,0),
+            0 10px 30px rgba(245,158,11,0.35);
+    }
+}
+
+/* ======================================================
+   CONTENT
+====================================================== */
+
+.stok-floating-content{
+    width: 0;
+
+    opacity: 0;
+
+    overflow: hidden;
+
+    margin-left: 0;
+
+    background: rgba(255,255,255,0.92);
+
+    backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255,255,255,0.3);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.12);
+
+    transition:
+        width 0.4s ease,
+        opacity 0.3s ease,
+        margin-left 0.3s ease,
+        padding 0.3s ease;
+
+    white-space: nowrap;
+
+    padding: 0;
+}
+
+/* ACTIVE */
+.stok-floating-content.active{
+    width: 340px;
+
+    opacity: 1;
+
+    margin-left: 14px;
+
+    padding: 20px;
+}
+
+/* ======================================================
+   HEADER
+====================================================== */
+
+.stok-header{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 16px;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+.stok-header i{
+    color: #f59e0b;
+}
+
+/* ======================================================
+   LIST
+====================================================== */
+
+.stok-floating-content ul{
+    margin: 0;
+    padding-left: 18px;
+}
+
+.stok-floating-content li{
+    font-size: 14px;
+    color: #374151;
+
+    margin-bottom: 10px;
+
+    line-height: 1.5;
+}
+
+/* ======================================================
+   DARK MODE
+====================================================== */
+
+.dark-mode .stok-floating-content{
+    background: rgba(15,23,42,0.92);
+
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.dark-mode .stok-header{
+    color: #f8fafc;
+}
+
+.dark-mode .stok-floating-content li{
+    color: #cbd5e1;
+}
+/* ============================= */
+/* RAPIIKAN TABEL TRANSAKSI */
+/* KHUSUS LAPORAN CABANG */
+/* ============================= */
+
+.premium-table td {
+    vertical-align: middle;
+}
+
+.premium-table td,
+.premium-table th {
+    padding: 14px 12px;
+    line-height: 1.3;
+}
+
+.premium-table td:nth-child(3) {
+    line-height: 1.2;
+    font-size: 14px;
+}
+
+.premium-table td:nth-child(4),
+.premium-table td:nth-child(5),
+.premium-table td:nth-child(6) {
+    white-space: nowrap;
+}
+/* ===================================== */
+/* PREMIUM USER FORM UPGRADE */
+/* ===================================== */
+
+.premium-user-form {
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 22px;
+    padding: 35px;
+
+    background:
+        linear-gradient(145deg,
+        rgba(255,255,255,0.96),
+        rgba(248,251,255,0.96));
+
+    border: 1px solid rgba(255,255,255,0.6);
+
+    box-shadow:
+        0 10px 35px rgba(15,23,42,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.7);
+
+    backdrop-filter: blur(10px);
+
+    transition: 0.35s ease;
+}
+
+/* glow hover soft */
+.premium-user-form:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 18px 45px rgba(15,23,42,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+/* top accent */
+.premium-user-form::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background:
+        linear-gradient(90deg,
+        #002b5b,
+        #0056b3,
+        #3b82f6);
+}
+
+/* LABEL */
+.premium-user-form label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+
+    margin-bottom: 6px;
+    display: block;
+
+    letter-spacing: 0.3px;
+}
+
+/* INPUT + SELECT */
+.premium-user-form input,
+.premium-user-form select {
+
+    height: 48px;
+
+    border-radius: 14px;
+    border: 1px solid #dbe2ea;
+
+    background: rgba(255,255,255,0.85);
+
+    padding: 0 14px;
+
+    transition:
+        border 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+/* FOCUS */
+.premium-user-form input:focus,
+.premium-user-form select:focus {
+
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 4px rgba(59,130,246,0.12);
+
+    transform: translateY(-1px);
+}
+
+/* BUTTON */
+.premium-user-form button {
+
+    min-width: 180px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    background:
+        linear-gradient(135deg,
+        #002b5b,
+        #003d80);
+
+    box-shadow:
+        0 10px 25px rgba(0,43,91,0.18);
+}
+
+/* BUTTON HOVER */
+.premium-user-form button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(0,43,91,0.22);
+}
+
+/* spacing antar form */
+.premium-user-form .form-grid {
+    gap: 20px;
+}
+
+/* ===================================== */
+/* DARK MODE */
+/* ===================================== */
+
+body.dark-mode .premium-user-form {
+
+    background:
+        linear-gradient(145deg,
+        rgba(30,41,59,0.96),
+        rgba(15,23,42,0.96));
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.45);
+}
+
+body.dark-mode .premium-user-form label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .premium-user-form input,
+body.dark-mode .premium-user-form select {
+
+    background: rgba(51,65,85,0.75) !important;
+
+    border: 1px solid #475569 !important;
+
+    color: white !important;
+}
+
+body.dark-mode .premium-user-form input:focus,
+body.dark-mode .premium-user-form select:focus {
+
+    border-color: #60a5fa !important;
+
+    box-shadow:
+        0 0 0 4px rgba(96,165,250,0.18) !important;
+}
+/* ===================================== */
+/* PREMIUM MATERIAL FORM */
+/* ===================================== */
+
+.premium-material-form {
+
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(255,255,255,0.97),
+        rgba(248,250,252,0.97));
+
+    border: 1px solid rgba(255,255,255,0.7);
+
+    box-shadow:
+        0 12px 35px rgba(15,23,42,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+/* hover soft */
+.premium-material-form:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 18px 45px rgba(15,23,42,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* top accent */
+.premium-material-form::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background:
+        linear-gradient(
+        90deg,
+        #002b5b,
+        #0f4c81,
+        #3b82f6);
+}
+
+/* LABEL */
+.premium-material-form label {
+
+    display: block;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #334155;
+
+    margin-bottom: 7px;
+
+    letter-spacing: 0.3px;
+}
+
+/* INPUT */
+.premium-material-form input {
+
+    height: 50px;
+
+    border-radius: 14px;
+
+    border: 1px solid #dbe2ea;
+
+    background:
+        rgba(255,255,255,0.88);
+
+    padding: 0 15px;
+
+    transition:
+        border 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+/* PLACEHOLDER */
+.premium-material-form input::placeholder {
+
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* FOCUS */
+.premium-material-form input:focus {
+
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 4px rgba(59,130,246,0.12);
+
+    transform: translateY(-1px);
+}
+
+/* BUTTON */
+.premium-material-form button {
+
+    min-width: 180px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.3px;
+
+    background:
+        linear-gradient(
+        135deg,
+        #002b5b,
+        #003d80);
+
+    box-shadow:
+        0 10px 25px rgba(0,43,91,0.18);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* BUTTON HOVER */
+.premium-material-form button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(0,43,91,0.22);
+}
+
+/* ===================================== */
+/* DARK MODE */
+/* ===================================== */
+
+body.dark-mode .premium-material-form {
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(30,41,59,0.96),
+        rgba(15,23,42,0.96));
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.45);
+}
+
+body.dark-mode .premium-material-form label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .premium-material-form input {
+
+    background:
+        rgba(51,65,85,0.75);
+
+    border: 1px solid #475569;
+
+    color: white;
+}
+
+body.dark-mode .premium-material-form input::placeholder {
+    color: #cbd5e1;
+}
+
+body.dark-mode .premium-material-form input:focus {
+
+    border-color: #60a5fa;
+
+    box-shadow:
+        0 0 0 4px rgba(96,165,250,0.18);
+}
+/* ===================================== */
+/* PREMIUM KIRIM STOK FORM */
+/* ===================================== */
+
+.premium-kirim-form,
+.premium-filter-form {
+
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(255,255,255,0.97),
+        rgba(248,250,252,0.97));
+
+    border: 1px solid rgba(255,255,255,0.7);
+
+    box-shadow:
+        0 12px 35px rgba(15,23,42,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+/* hover */
+.premium-kirim-form:hover,
+.premium-filter-form:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 18px 45px rgba(15,23,42,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* top accent */
+.premium-kirim-form::before,
+.premium-filter-form::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background:
+        linear-gradient(
+        90deg,
+        #002b5b,
+        #0f4c81,
+        #3b82f6);
+}
+
+/* LABEL */
+.premium-kirim-form label,
+.premium-filter-form label {
+
+    display: block;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #334155;
+
+    margin-bottom: 7px;
+
+    letter-spacing: 0.3px;
+}
+
+/* INPUT + SELECT */
+.premium-kirim-form input,
+.premium-kirim-form select,
+.premium-filter-form input {
+
+    height: 50px;
+
+    border-radius: 14px;
+
+    border: 1px solid #dbe2ea;
+
+    background:
+        rgba(255,255,255,0.88);
+
+    padding: 0 15px;
+
+    transition:
+        border 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+/* PLACEHOLDER */
+.premium-kirim-form input::placeholder,
+.premium-filter-form input::placeholder {
+
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* FOCUS */
+.premium-kirim-form input:focus,
+.premium-kirim-form select:focus,
+.premium-filter-form input:focus {
+
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 4px rgba(59,130,246,0.12);
+
+    transform: translateY(-1px);
+}
+
+/* BUTTON */
+.premium-kirim-form button,
+.premium-filter-form button {
+
+    min-width: 160px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.3px;
+
+    background:
+        linear-gradient(
+        135deg,
+        #002b5b,
+        #003d80);
+
+    box-shadow:
+        0 10px 25px rgba(0,43,91,0.18);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* BUTTON HOVER */
+.premium-kirim-form button:hover,
+.premium-filter-form button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(0,43,91,0.22);
+}
+
+/* ===================================== */
+/* DARK MODE */
+/* ===================================== */
+
+body.dark-mode .premium-kirim-form,
+body.dark-mode .premium-filter-form {
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(30,41,59,0.96),
+        rgba(15,23,42,0.96));
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.45);
+}
+
+body.dark-mode .premium-kirim-form label,
+body.dark-mode .premium-filter-form label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .premium-kirim-form input,
+body.dark-mode .premium-kirim-form select,
+body.dark-mode .premium-filter-form input {
+
+    background:
+        rgba(51,65,85,0.75);
+
+    border: 1px solid #475569;
+
+    color: white;
+}
+
+body.dark-mode .premium-kirim-form input::placeholder,
+body.dark-mode .premium-filter-form input::placeholder {
+    color: #cbd5e1;
+}
+
+body.dark-mode .premium-kirim-form input:focus,
+body.dark-mode .premium-kirim-form select:focus,
+body.dark-mode .premium-filter-form input:focus {
+
+    border-color: #60a5fa;
+
+    box-shadow:
+        0 0 0 4px rgba(96,165,250,0.18);
+}
+/* ===================================== */
+/* PREMIUM MONITORING FORM */
+/* ===================================== */
+
+.premium-monitor-form {
+
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(255,255,255,0.97),
+        rgba(248,250,252,0.97));
+
+    border: 1px solid rgba(255,255,255,0.7);
+
+    box-shadow:
+        0 12px 35px rgba(15,23,42,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+/* hover */
+.premium-monitor-form:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 18px 45px rgba(15,23,42,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* top accent */
+.premium-monitor-form::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background:
+        linear-gradient(
+        90deg,
+        #002b5b,
+        #0f4c81,
+        #3b82f6);
+}
+
+/* LABEL */
+.premium-monitor-form label {
+
+    display: block;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #334155;
+
+    margin-bottom: 10px;
+
+    letter-spacing: 0.3px;
+}
+
+/* SELECT */
+.premium-monitor-form select {
+
+    height: 52px;
+
+    border-radius: 14px;
+
+    border: 1px solid #dbe2ea;
+
+    background:
+        rgba(255,255,255,0.88);
+
+    padding: 0 15px;
+
+    transition:
+        border 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+/* FOCUS */
+.premium-monitor-form select:focus {
+
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 4px rgba(59,130,246,0.12);
+
+    transform: translateY(-1px);
+}
+
+/* BUTTON */
+.premium-monitor-form button {
+
+    width: 100%;
+    height: 50px;
+
+    border-radius: 14px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.3px;
+
+    background:
+        linear-gradient(
+        135deg,
+        #002b5b,
+        #003d80);
+
+    box-shadow:
+        0 10px 25px rgba(0,43,91,0.18);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* BUTTON HOVER */
+.premium-monitor-form button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(0,43,91,0.22);
+}
+
+/* ===================================== */
+/* DARK MODE */
+/* ===================================== */
+
+body.dark-mode .premium-monitor-form {
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(30,41,59,0.96),
+        rgba(15,23,42,0.96));
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.45);
+}
+
+body.dark-mode .premium-monitor-form label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .premium-monitor-form select {
+
+    background:
+        rgba(51,65,85,0.75);
+
+    border: 1px solid #475569;
+
+    color: white;
+}
+
+body.dark-mode .premium-monitor-form select:focus {
+
+    border-color: #60a5fa;
+
+    box-shadow:
+        0 0 0 4px rgba(96,165,250,0.18);
+}
+/* ===================================== */
+/* PREMIUM LAPORAN FORM */
+/* ===================================== */
+
+.premium-laporan-form {
+
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(255,255,255,0.97),
+        rgba(248,250,252,0.97));
+
+    border: 1px solid rgba(255,255,255,0.7);
+
+    box-shadow:
+        0 12px 35px rgba(15,23,42,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+/* hover */
+.premium-laporan-form:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 18px 45px rgba(15,23,42,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* top accent */
+.premium-laporan-form::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background:
+        linear-gradient(
+        90deg,
+        #002b5b,
+        #0f4c81,
+        #3b82f6);
+}
+
+/* LABEL */
+.premium-laporan-form label {
+
+    display: block;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #334155;
+
+    margin-bottom: 7px;
+
+    letter-spacing: 0.3px;
+}
+
+/* INPUT + SELECT */
+.premium-laporan-form input,
+.premium-laporan-form select {
+
+    height: 50px;
+
+    border-radius: 14px;
+
+    border: 1px solid #dbe2ea;
+
+    background:
+        rgba(255,255,255,0.88);
+
+    padding: 0 15px;
+
+    transition:
+        border 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+/* PLACEHOLDER */
+.premium-laporan-form input::placeholder {
+
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* FOCUS */
+.premium-laporan-form input:focus,
+.premium-laporan-form select:focus {
+
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 4px rgba(59,130,246,0.12);
+
+    transform: translateY(-1px);
+}
+
+/* BUTTON */
+.premium-laporan-form button {
+
+    min-width: 180px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.3px;
+
+    background:
+        linear-gradient(
+        135deg,
+        #002b5b,
+        #003d80);
+
+    box-shadow:
+        0 10px 25px rgba(0,43,91,0.18);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* BUTTON HOVER */
+.premium-laporan-form button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(0,43,91,0.22);
+}
+
+/* ===================================== */
+/* DARK MODE */
+/* ===================================== */
+
+body.dark-mode .premium-laporan-form {
+
+    background:
+        linear-gradient(
+        145deg,
+        rgba(30,41,59,0.96),
+        rgba(15,23,42,0.96));
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.45);
+}
+
+body.dark-mode .premium-laporan-form label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .premium-laporan-form input,
+body.dark-mode .premium-laporan-form select {
+
+    background:
+        rgba(51,65,85,0.75);
+
+    border: 1px solid #475569;
+
+    color: white;
+}
+
+body.dark-mode .premium-laporan-form input::placeholder {
+    color: #cbd5e1;
+}
+
+body.dark-mode .premium-laporan-form input:focus,
+body.dark-mode .premium-laporan-form select:focus {
+
+    border-color: #60a5fa;
+
+    box-shadow:
+        0 0 0 4px rgba(96,165,250,0.18);
+}
+/* ===================================== */
+/* FIX DATEPICKER SIZE */
+/* ===================================== */
+
+.premium-laporan-form .datepicker,
+.premium-laporan-form select {
+
+    height: 42px !important;
+
+    min-height: 42px !important;
+
+    padding: 0 14px !important;
+
+    box-sizing: border-box;
+
+    line-height: normal !important;
+}
+/* ===================================== */
+/* PERFECT INPUT ALIGN */
+/* ===================================== */
+
+.premium-laporan-form input,
+.premium-laporan-form select {
+
+    width: 100%;
+
+    height: 48px !important;
+
+    padding: 0 14px !important;
+
+    border-radius: 14px;
+
+    box-sizing: border-box;
+
+    font-size: 14px;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
 @keyframes spin {
     to { transform: rotate(360deg); }
 }

@@ -625,6 +625,16 @@ def laporan_cabang():
 
     if edit_id:
         edit_data = Keuangan.query.get(edit_id)
+    # ================= EDIT PENGELUARAN =================
+    edit_pengeluaran_id = request.args.get("edit_pengeluaran_id")
+    edit_pengeluaran = None
+
+    if edit_pengeluaran_id:
+        edit_pengeluaran = Keuangan.query.filter_by(
+            id=edit_pengeluaran_id,
+             tipe="pengeluaran",
+            cabang=current_user.cabang
+            ).first()
     # jika user klik menu laporan tanpa tanggal → reset session
     if not tanggal:
         session.pop("laporan_tanggal", None)
@@ -694,7 +704,10 @@ def laporan_cabang():
                 ).first()
 
                 if stok_lama:
-                    stok_lama.total_kubik += data.kubikasi
+                    stok_lama.total_kubik = round(
+                        stok_lama.total_kubik + data.kubikasi,
+                        2
+                    )
 
                 # 🔥 STOK BARU (material yang dipilih sekarang)
                 stok_baru = StokCabang.query.filter_by(
@@ -712,8 +725,10 @@ def laporan_cabang():
                     return redirect(url_for('laporan_cabang', tanggal=tanggal))
 
                 # 🔥 POTONG STOK BARU
-                stok_baru.total_kubik -= kubikasi
-
+                stok_baru.total_kubik = round(
+                    stok_baru.total_kubik - kubikasi,
+                    2
+                )
                 harga_per_m3 = material.harga / 4.5
                 total = round(kubikasi * harga_per_m3)
                 total = round(total / 1000) * 1000
@@ -792,17 +807,45 @@ def laporan_cabang():
                 flash("Jumlah wajib diisi")
                 return redirect(url_for('laporan_cabang', tanggal=tanggal))
 
-            pengeluaran = Keuangan(
-                tipe="pengeluaran",
-                cabang=current_user.cabang,
-                keterangan=request.form['keterangan'],
-                jumlah=float(jumlah_input),
-                tanggal=tanggal_obj,
-                status="Draft"
-            )
+            # ================= EDIT PENGELUARAN =================
+            edit_pengeluaran_form = request.form.get("edit_pengeluaran_id")
 
-            db.session.add(pengeluaran)
-            db.session.commit()
+            if edit_pengeluaran_form:
+
+                pengeluaran = Keuangan.query.get(
+                    int(edit_pengeluaran_form)
+                )
+
+                if pengeluaran:
+                    pengeluaran.keterangan = request.form['keterangan']
+                    pengeluaran.jumlah = float(jumlah_input)
+
+                    db.session.commit()
+
+                    flash(
+                        "Pengeluaran berhasil diperbarui",
+                        "success"
+                    )
+
+            # ================= TAMBAH PENGELUARAN =================
+            else:
+
+                pengeluaran = Keuangan(
+                    tipe="pengeluaran",
+                    cabang=current_user.cabang,
+                    keterangan=request.form['keterangan'],
+                    jumlah=float(jumlah_input),
+                    tanggal=tanggal_obj,
+                    status="Draft"
+                )
+
+                db.session.add(pengeluaran)
+                db.session.commit()
+
+                flash(
+                    "Pengeluaran berhasil ditambahkan",
+                    "success"
+                )
 
         return redirect(url_for('laporan_cabang', tanggal=tanggal))
 
@@ -842,6 +885,7 @@ def laporan_cabang():
         total_pemasukan=total_pemasukan,
         total_pengeluaran=total_pengeluaran,
         edit_data=edit_data,
+        edit_pengeluaran=edit_pengeluaran,
         tanggal=tanggal
     )
 @app.route('/delete_keuangan/<int:id>')
@@ -867,13 +911,56 @@ def delete_keuangan(id):
         ).first()
 
         if stok:
-            stok.total_kubik += data.kubikasi
+            stok.total_kubik = round(
+                stok.total_kubik + data.kubikasi,
+                2
+            )
 
     db.session.delete(data)
     db.session.commit()
 
     flash("Data berhasil dihapus", "success")
     return redirect(request.referrer)
+# ==============================
+# DELETE PENGELUARAN
+# ==============================
+@app.route('/delete_pengeluaran/<int:id>')
+@login_required
+def delete_pengeluaran(id):
+
+    data = Keuangan.query.get_or_404(id)
+
+    # keamanan cabang
+    if data.cabang != current_user.cabang:
+        flash("Akses ditolak!", "danger")
+        return redirect(url_for('laporan_cabang'))
+
+    # hanya pengeluaran draft yang boleh dihapus
+    if data.tipe == "pengeluaran" and data.status != "Final":
+
+        tanggal = data.tanggal.strftime('%Y-%m-%d')
+
+        db.session.delete(data)
+        db.session.commit()
+
+        flash(
+            "Pengeluaran berhasil dihapus!",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                'laporan_cabang',
+                tanggal=tanggal
+            )
+        )
+
+    flash(
+        "Pengeluaran tidak dapat dihapus!",
+        "danger"
+    )
+
+    return redirect(url_for('laporan_cabang'))
 # ================= TUTUP LAPORAN =================
 @app.route('/tutup_laporan')
 @login_required

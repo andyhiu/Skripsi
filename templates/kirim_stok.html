@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div class="form-box">
+        <div class="form-box premium-kirim-form">
             <form method="POST" class="form-grid">
 
                 <div>
@@ -40,12 +40,21 @@
 
                 <div>
                     <label>Jumlah Truck</label>
-                    <input type="number" name="jumlah_truck" min="1" required>
+                    <input type="number"
+                           name="jumlah_truck"
+                           placeholder="Jumlah"
+                           min="1"
+                           required>
                 </div>
 
                 <div>
                     <label>Total Kubikasi (m³)</label>
-                    <input type="number" step="0.01" name="total_kubik" min="0.01" required>
+                    <input type="number"
+                           step="0.01"
+                           name="total_kubik"
+                           placeholder="Contoh 4,5"
+                           min="0.01"
+                           required>
                 </div>
 
                 <div class="full button-wrapper">
@@ -55,7 +64,7 @@
             </form>
         </div>
 
-        <div class="card filter-card">
+        <div class="card filter-card premium-filter-form">
             <h3>Filter Berdasarkan Tanggal</h3>
 
             <form method="GET" class="filter-form">

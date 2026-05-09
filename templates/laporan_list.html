@@ -9,7 +9,7 @@
 
     <!-- ================= LEFT SIDE (FILTER) ================= -->
     <div class="split-left">
-        <div class="form-box">
+        <div class="form-box premium-laporan-form">
             <form method="GET" class="form-grid">
 
                 <div>
@@ -24,9 +24,13 @@
                 <div>
                     <label>Pilih Cabang</label>
                     <select name="cabang">
-                        <option value="">-- Semua Cabang --</option>
+                        <option value="">
+                            Pilih cabang
+                        </option>
                         <option value="Tuban"
-                            {% if cabang =="Tuban" %}selected{% endif %}>
+                            {% if cabang=="Tuban" or not cabang %}
+                                selected
+                            {% endif %}>
                             Tuban
                         </option>
                         <option value="Mahendradatta"

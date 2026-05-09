@@ -197,33 +197,72 @@
     <label for="themeSwitch" class="toggle-slider"></label>
 </div>
 
-<!-- 🔥 FLOATING NOTIF (TAMBAHAN SAJA, TIDAK MENGHAPUS APA PUN) -->
+<!-- =====================================================
+     FLOATING STOK MENIPIS MODERN
+===================================================== -->
 {% if current_user.is_authenticated %}
 
+    <!-- CABANG -->
     {% if current_user.role == "cabang" and stok_menipis %}
-    <div class="floating-alert">
-        <div class="floating-header">
-            ⚠ Stok Menipis
+
+    <div class="stok-floating-wrapper">
+
+        <button class="stok-toggle-btn" onclick="toggleStokFloating()">
+            <i class="fas fa-exclamation-triangle"></i>
+        </button>
+
+        <div class="stok-floating-content" class="stok-floating-content">
+
+            <div class="stok-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Stok Menipis</span>
+            </div>
+
+            <ul>
+                {% for s, nama in stok_menipis %}
+                <li>
+                    {{ nama }} -
+                    {{ "%.2f"|format(s.total_kubik) }} m³
+                </li>
+                {% endfor %}
+            </ul>
+
         </div>
-        <ul>
-            {% for s, nama in stok_menipis %}
-            <li>{{ nama }} - {{ "%.2f"|format(s.total_kubik) }} m³</li>
-            {% endfor %}
-        </ul>
+
     </div>
+
     {% endif %}
 
+    <!-- ADMIN -->
     {% if current_user.role == "admin" and stok_menipis_all %}
-    <div class="floating-alert">
-        <div class="floating-header">
-            ⚠ Stok Menipis Cabang
+
+    <div class="stok-floating-wrapper">
+
+        <button class="stok-toggle-btn" onclick="toggleStokFloating()">
+            <i class="fas fa-exclamation-triangle"></i>
+        </button>
+
+        <div class="stok-floating-content" class="stok-floating-content">
+
+            <div class="stok-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Stok Menipis Cabang</span>
+            </div>
+
+            <ul>
+                {% for s, nama in stok_menipis_all %}
+                <li>
+                    {{ s.lokasi }} →
+                    {{ nama }}
+                    ({{ "%.2f"|format(s.total_kubik) }} m³)
+                </li>
+                {% endfor %}
+            </ul>
+
         </div>
-        <ul>
-            {% for s, nama in stok_menipis_all %}
-            <li>{{ s.lokasi }} → {{ nama }} ({{ "%.2f"|format(s.total_kubik) }} m³)</li>
-            {% endfor %}
-        </ul>
+
     </div>
+
     {% endif %}
 
 {% endif %}
@@ -301,6 +340,15 @@ function openProfilePanel(){
 function closeProfilePanel(){
     document.getElementById("profilePanel").classList.remove("active");
     document.getElementById("profileOverlay").classList.remove("active");
+}
+function toggleStokFloating() {
+
+    const floating = document.querySelector(".stok-floating-content");
+
+    if (floating) {
+        floating.classList.toggle("active");
+    }
+
 }
 </script>
 

@@ -9,18 +9,22 @@
 
     <!-- ================= LEFT SIDE (FILTER) ================= -->
     <div class="split-left">
-        <div class="card center-filter-card">
+        <div class="card center-filter-card premium-monitor-form">
 
             <form method="GET" class="center-filter-form">
 
                 <label>Pilih Lokasi</label>
 
                 <select name="cabang" required class="filter-select">
-                    <option value="" disabled {% if not cabang %}selected{% endif %}>
+                    <option value="" disabled>
                         Silahkan filter lokasi yang ingin dilihat
                     </option>
 
-                    <option value="Pusat" {% if cabang =="Pusat" %}selected{% endif %}>
+                    <option value="Pusat"
+                            {% if cabang=="Pusat" or not cabang %}
+                            selected
+                            {% endif %}
+                        >
                         Pusat
                     </option>
 
