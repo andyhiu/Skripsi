@@ -68,17 +68,17 @@ Sistem ini dirancang untuk mempermudah pengelolaan operasional material mulai da
 7. Buka browser:
    http://127.0.0.1:5000
 
-## Akun Login (Contoh)
+## Akun Login 
 
 Admin:
 
 * Username: admin
-* Password: admin
+* Password: 123
 
 Cabang:
 
 * Username: tuban
-* Password: tuban
+* Password: 123
 
 ## Struktur Project
 
