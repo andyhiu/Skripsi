@@ -1045,7 +1045,7 @@ def laporan():
     laporan_list.sort(key=lambda x: x["tanggal"], reverse=True)
 
     # ================= PAGINATION MANUAL =================
-    per_page = 10
+    per_page = 5
     start = (page - 1) * per_page
     end = start + per_page
 

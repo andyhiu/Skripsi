@@ -27,104 +27,150 @@
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
-<div class="navbar">
+<!-- ================= PREMIUM GLOBAL NAVBAR ================= -->
 
-    <div class="nav-left">
-        <div class="burger" onclick="toggleMenu()">☰</div>
-    </div>
+<header class="navbar-premium">
 
-    <div class="nav-center">
-        SISTEM MATERIAL PT SAMPURNA ABADI MAKMUR
-    </div>
+    <div class="navbar-container">
 
-    <div class="menu" id="navMenu">
+        <!-- LEFT -->
+        <div class="navbar-left-area">
 
-        <div class="mobile-header">
-            <span>Menu</span>
-            <button class="close-btn" onclick="toggleMenu()">✕</button>
+            <!-- MOBILE BURGER -->
+            <div class="burger-modern" onclick="toggleMenu()">
+                ☰
+            </div>
+
+            <!-- BRAND -->
+            <div class="brand-section">
+
+                <div class="brand-logo">
+                    ⬢
+                </div>
+
+                <div class="brand-text">
+                    <h2>SISTEM MATERIAL</h2>
+                    <span>PT Sampurna Abadi Makmur</span>
+                </div>
+
+            </div>
+
         </div>
 
-        {% if current_user.is_authenticated %}
+        <!-- MENU -->
+        <div class="menu premium-menu" id="navMenu">
 
-        <div class="mobile-profile" onclick="openProfilePanel(); toggleMenu();">
-            <div class="mobile-profile-avatar">👤</div>
-            <div class="mobile-profile-text">
-                <div class="mobile-username">{{ current_user.username }}</div>
-                <div class="mobile-role">
-                    {{ current_user.role|capitalize }} - {{ current_user.cabang }}
+            <div class="mobile-header">
+                <span>Menu</span>
+                <button class="close-btn" onclick="toggleMenu()">✕</button>
+            </div>
+
+            {% if current_user.is_authenticated %}
+
+            <!-- MOBILE PROFILE -->
+            <div class="mobile-profile" onclick="openProfilePanel(); toggleMenu();">
+                <div class="mobile-profile-avatar">👤</div>
+
+                <div class="mobile-profile-text">
+                    <div class="mobile-username">
+                        {{ current_user.username }}
+                    </div>
+
+                    <div class="mobile-role">
+                        {{ current_user.role|capitalize }}
+                        -
+                        {{ current_user.cabang }}
+                    </div>
                 </div>
             </div>
+
+            <!-- DASHBOARD -->
+            <a href="/dashboard"
+               class="{% if request.path.startswith('/dashboard') %}active{% endif %}">
+               Dashboard
+            </a>
+
+            {% if current_user.role == "admin" %}
+
+                <a href="/user"
+                   class="{% if request.path.startswith('/user') %}active{% endif %}">
+                   User
+                </a>
+
+                <a href="/material"
+                   class="{% if request.path.startswith('/material') %}active{% endif %}">
+                   Material
+                </a>
+
+                <a href="/kirim"
+                   class="{% if request.path.startswith('/kirim') %}active{% endif %}">
+                   Kirim Stok
+                </a>
+
+                <a href="/monitor_stok"
+                   class="{% if request.path.startswith('/monitor_stok') %}active{% endif %}">
+                   Monitoring Stok
+                </a>
+
+                <a href="/laporan"
+                   class="{% if request.path.startswith('/laporan') %}active{% endif %}">
+                   Laporan
+                </a>
+
+            {% elif current_user.role == "cabang" %}
+
+                <a href="/konfirmasi_stok"
+                   class="notif-link {% if request.path.startswith('/konfirmasi_stok') %}active{% endif %}">
+                    Konfirmasi Stok
+
+                    {% if notifikasi_stok > 0 %}
+                        <span class="badge">{{ notifikasi_stok }}</span>
+                    {% endif %}
+                </a>
+
+                <a href="/stok_cabang"
+                   class="{% if request.path.startswith('/stok_cabang') %}active{% endif %}">
+                   Stok
+                </a>
+
+                <a href="/laporan_cabang"
+                   class="{% if request.path.startswith('/laporan_cabang') %}active{% endif %}">
+                   Laporan Harian
+                </a>
+
+            {% endif %}
+
+            {% endif %}
+
         </div>
 
-        <a href="/dashboard"
-           class="{% if request.path.startswith('/dashboard') %}active{% endif %}">
-           Dashboard
-        </a>
+        <!-- PROFILE -->
+        {% if current_user.is_authenticated %}
 
-        {% if current_user.role == "admin" %}
+        <div class="premium-profile"
+             onclick="openProfilePanel()">
 
-            <a href="/user"
-               class="{% if request.path.startswith('/user') %}active{% endif %}">
-               User
-            </a>
-
-            <a href="/material"
-               class="{% if request.path.startswith('/material') %}active{% endif %}">
-               Material
-            </a>
-
-            <a href="/kirim"
-               class="{% if request.path.startswith('/kirim') %}active{% endif %}">
-               Kirim Stok
-            </a>
-
-            <a href="/monitor_stok"
-               class="{% if request.path.startswith('/monitor_stok') %}active{% endif %}">
-               Monitoring Stok
-            </a>
-
-            <a href="/laporan"
-               class="{% if request.path.startswith('/laporan') %}active{% endif %}">
-               Laporan
-            </a>
-
-        {% elif current_user.role == "cabang" %}
-
-            <a href="/konfirmasi_stok"
-               class="notif-link {% if request.path.startswith('/konfirmasi_stok') %}active{% endif %}">
-                Konfirmasi Stok
-                {% if notifikasi_stok > 0 %}
-                    <span class="badge">{{ notifikasi_stok }}</span>
-                {% endif %}
-            </a>
-
-            <a href="/stok_cabang"
-               class="{% if request.path.startswith('/stok_cabang') %}active{% endif %}">
-               Stok
-            </a>
-
-            <a href="/laporan_cabang"
-               class="{% if request.path.startswith('/laporan_cabang') %}active{% endif %}">
-               Laporan Harian
-            </a>
-
-        {% endif %}
-
-        {% endif %}
-    </div>
-
-    {% if current_user.is_authenticated %}
-    <div class="nav-profile">
-        <div class="profile-badge" onclick="openProfilePanel()">
-            <div class="profile-icon">
-                👤︎
+            <div class="profile-avatar">
+                👤
             </div>
-        </div>
-    </div>
-    {% endif %}
 
-</div>
+            <div class="profile-info-navbar">
+                <strong>
+                    {{ current_user.username }}
+                </strong>
+
+                <span>
+                    {{ current_user.role|capitalize }}
+                </span>
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</header>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="profile-overlay" id="profileOverlay" onclick="closeProfilePanel()"></div>

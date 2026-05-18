@@ -1,10 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="page-header">
-    <h2>Monitoring Stok</h2>
-</div>
+<div class="global-hero">
 
+    <div>
+
+        <span class="global-badge">
+            Monitoring Material
+        </span>
+
+        <h1>Monitoring Stok</h1>
+
+        <p>
+            Pantau stok material pada setiap cabang
+            secara real-time dan terintegrasi.
+        </p>
+
+    </div>
+
+    <div class="global-hero-mini">
+
+        <span>Total Cabang</span>
+
+        <h2>3</h2>
+
+    </div>
+
+</div>
 <div class="split-layout">
 
     <!-- ================= LEFT SIDE (FILTER) ================= -->
@@ -76,7 +98,7 @@
         </div>
 
         <!-- ================= TABLE ================= -->
-        <div class="card">
+        <div class="global-card">
 
             <div style="display:flex; align-items:center; margin-bottom:15px;">
 
@@ -88,16 +110,17 @@
 
                 <div style="flex:1; text-align:right;">
                     {% if cabang == "Pusat" %}
-                    <a href="{{ url_for('tambah_stok') }}" class="btn-primary">
-                        + Tambah Stok
-                    </a>
+                        <a href="{{ url_for('tambah_stok') }}"
+                           class="btn-primary monitor-stock-add-btn">
+                            + Tambah Stok
+                        </a>
                     {% endif %}
                 </div>
 
             </div>
 
             <div class="table-responsive">
-                <table class="premium-table">
+                <table class="global-table">
                     <thead>
                         <tr>
                             <th>No</th>

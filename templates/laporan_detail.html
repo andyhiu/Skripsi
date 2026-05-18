@@ -1,204 +1,344 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="page-header">
-    <h2>Detail Laporan</h2>
-</div>
+<div class="laporan-detail-page">
 
-<div class="split-layout">
+    <!-- HERO -->
+    <div class="detail-hero">
 
-    <!-- ================= LEFT SIDE ================= -->
-    <div class="split-left">
+        <div class="detail-hero-left">
 
-        <!-- INFORMASI LAPORAN -->
-        <div class="card" style="margin-bottom:25px;">
-            <h3 style="margin-bottom:15px;">Informasi Laporan</h3>
+            <span class="detail-badge">
+                Detail Laporan
+            </span>
 
-            <p><strong>Cabang:</strong> {{ laporan.cabang }}</p>
-            <p><strong>Tanggal:</strong> {{ laporan.tanggal }}</p>
+            <h1>
+                Detail Laporan
+            </h1>
 
-            <hr style="margin:20px 0;">
+            <p>
+                Monitoring transaksi pemasukan dan pengeluaran
+                cabang secara detail dan terintegrasi.
+            </p>
 
-            <p style="font-weight:600;">Total Pemasukan</p>
-            <h3 style="color:#0d3b66; margin-bottom:15px;">
-                Rp {{ "{:,.0f}".format(laporan.total_pemasukan).replace(",", ".") }}
-            </h3>
-
-            <p style="font-weight:600;">Total Pengeluaran</p>
-            <h3 style="color:#b02a37;">
-                Rp {{ "{:,.0f}".format(laporan.total_pengeluaran).replace(",", ".") }}
-            </h3>
-
-            <div style="margin-top:25px;">
-                <a href="{{ url_for('laporan_pdf', cabang=laporan.cabang, tanggal=laporan.tanggal) }}"
-                   class="btn-primary"
-                   style="text-decoration:none; display:inline-block;">
-                    📄 Generate PDF
-                </a>
-            </div>
         </div>
 
-        <!-- 🔥 PINDAH KE SINI (PENGELUARAN) -->
-        <div class="card">
-            <h3 style="margin-bottom:15px;">Pengeluaran</h3>
+        <div class="detail-hero-right">
 
-            {% if pengeluaran %}
-            <div class="table-responsive">
-                <table class="premium-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Keterangan</th>
-                            <th>Jumlah</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in pengeluaran %}
-                        <tr>
-                            <td>{{ (pengeluaran_pagination.page - 1) * 10 + loop.index }}</td>
-                            <td>{{ p.keterangan }}</td>
-                            <td style="white-space: nowrap;">
-                                Rp {{ "{:,.0f}".format(p.jumlah).replace(",", ".") }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="detail-hero-mini">
+                <span>Total Transaksi</span>
+
+                <h2>
+                    {{ transaksi_pagination.total }}
+                </h2>
             </div>
 
-            {% if pengeluaran_pagination.pages > 1 %}
-            <div class="pagination-premium">
-
-                {% if pengeluaran_pagination.has_prev %}
-                <a href="{{ url_for('laporan_detail',
-                        cabang=laporan.cabang,
-                        tanggal=laporan.tanggal,
-                        page_pengeluaran=pengeluaran_pagination.prev_num,
-                        page_transaksi=transaksi_pagination.page) }}"
-                   class="page-btn">← Prev</a>
-                {% endif %}
-
-                {% for page in pengeluaran_pagination.iter_pages() %}
-                    {% if page %}
-                        {% if page == pengeluaran_pagination.page %}
-                            <span class="page-btn active">{{ page }}</span>
-                        {% else %}
-                            <a href="{{ url_for('laporan_detail',
-                                cabang=laporan.cabang,
-                                tanggal=laporan.tanggal,
-                                page_pengeluaran=page,
-                                page_transaksi=transaksi_pagination.page) }}"
-                               class="page-btn">{{ page }}</a>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-
-                {% if pengeluaran_pagination.has_next %}
-                <a href="{{ url_for('laporan_detail',
-                        cabang=laporan.cabang,
-                        tanggal=laporan.tanggal,
-                        page_pengeluaran=pengeluaran_pagination.next_num,
-                        page_transaksi=transaksi_pagination.page) }}"
-                   class="page-btn">Next →</a>
-                {% endif %}
-
-            </div>
-            {% endif %}
-
-            {% else %}
-            <p style="color:#777;">Tidak ada pengeluaran.</p>
-            {% endif %}
         </div>
 
     </div>
 
-    <!-- ================= RIGHT SIDE ================= -->
-    <div class="split-right">
+    <div class="split-layout">
 
-        <!-- TRANSAKSI SAJA -->
-        <div class="card">
-            <h3 style="margin-bottom:15px;">Transaksi</h3>
+        <!-- ================= LEFT SIDE ================= -->
+        <div class="split-left">
 
-            {% if transaksi %}
-            <div class="table-responsive">
-                <table class="premium-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Material</th>
-                            <th>Jenis Truck</th>
-                            <th>Kubikasi</th>
-                            <th>Metode</th>
-                            <th>Total</th>
-                            <th>Nota</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for t in transaksi %}
-                        <tr>
-                            <td>{{ (transaksi_pagination.page - 1) * 10 + loop.index }}</td>
-                            <td>{{ t.material.nama }}</td>
-                            <td>{{ t.jenis_truck }}</td>
-                            <td>{{ "%.2f"|format(t.kubikasi) }} m³</td>
-                            <td>{{ t.metode }}</td>
-                            <td style="white-space: nowrap;">
-                                Rp {{ "{:,.0f}".format(t.jumlah).replace(",", ".") }}
-                            </td>
-                            <td class="col-nota">
-                                <a href="{{ url_for('nota_transaksi', id=t.id) }}"
-                                   class="btn-nota"
-                                   target="_blank">
-                                    <i class="fas fa-file-invoice"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            <!-- INFORMASI LAPORAN -->
+            <div class="card detail-info-card">
 
-            {% if transaksi_pagination.pages > 1 %}
-            <div class="pagination-premium">
+                <div class="card-header-premium">
+                    <h3>Informasi Laporan</h3>
+                </div>
 
-                {% if transaksi_pagination.has_prev %}
-                <a href="{{ url_for('laporan_detail',
-                        cabang=laporan.cabang,
-                        tanggal=laporan.tanggal,
-                        page_transaksi=transaksi_pagination.prev_num,
-                        page_pengeluaran=pengeluaran_pagination.page) }}"
-                   class="page-btn">← Prev</a>
-                {% endif %}
+                <div class="laporan-info-grid">
 
-                {% for page in transaksi_pagination.iter_pages() %}
-                    {% if page %}
-                        {% if page == transaksi_pagination.page %}
-                            <span class="page-btn active">{{ page }}</span>
-                        {% else %}
-                            <a href="{{ url_for('laporan_detail',
-                                cabang=laporan.cabang,
-                                tanggal=laporan.tanggal,
-                                page_transaksi=page,
-                                page_pengeluaran=pengeluaran_pagination.page) }}"
-                               class="page-btn">{{ page }}</a>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
+                    <div class="info-item">
+                        <span>Cabang</span>
+                        <strong>{{ laporan.cabang }}</strong>
+                    </div>
 
-                {% if transaksi_pagination.has_next %}
-                <a href="{{ url_for('laporan_detail',
-                        cabang=laporan.cabang,
-                        tanggal=laporan.tanggal,
-                        page_transaksi=transaksi_pagination.next_num,
-                        page_pengeluaran=pengeluaran_pagination.page) }}"
-                   class="page-btn">Next →</a>
-                {% endif %}
+                    <div class="info-item">
+                        <span>Tanggal</span>
+                        <strong>{{ laporan.tanggal }}</strong>
+                    </div>
+
+                </div>
+
+                <div class="summary-box">
+
+                    <div class="summary-item pemasukan">
+                        <span>Total Pemasukan</span>
+
+                        <h2>
+                            Rp {{ "{:,.0f}".format(laporan.total_pemasukan).replace(",", ".") }}
+                        </h2>
+                    </div>
+
+                    <div class="summary-item pengeluaran">
+                        <span>Total Pengeluaran</span>
+
+                        <h2>
+                            Rp {{ "{:,.0f}".format(laporan.total_pengeluaran).replace(",", ".") }}
+                        </h2>
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('laporan_pdf', cabang=laporan.cabang, tanggal=laporan.tanggal) }}"
+                   class="generate-pdf-btn">
+
+                    <i class="fas fa-file-pdf"></i>
+                    Generate PDF
+
+                </a>
 
             </div>
-            {% endif %}
 
+            <!-- PENGELUARAN -->
+            <div class="card detail-card-premium">
+
+                <div class="card-header-premium">
+                    <h3>Pengeluaran</h3>
+                </div>
+
+                {% if pengeluaran %}
+
+                <div class="table-responsive">
+
+                    <table class="premium-table">
+
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Keterangan</th>
+                                <th>Jumlah</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for p in pengeluaran %}
+                            <tr>
+
+                                <td>
+                                    {{ (pengeluaran_pagination.page - 1) * 10 + loop.index }}
+                                </td>
+
+                                <td>
+                                    {{ p.keterangan }}
+                                </td>
+
+                                <td style="white-space: nowrap;">
+                                    Rp {{ "{:,.0f}".format(p.jumlah).replace(",", ".") }}
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+<!-- PAGINATION PENGELUARAN -->
+<div class="pagination-modern">
+
+    {% if pengeluaran_pagination.has_prev %}
+        <a href="{{ url_for(
+            'laporan_detail',
+            cabang=laporan.cabang,
+            tanggal=laporan.tanggal,
+            page_pengeluaran=pengeluaran_pagination.prev_num,
+            page_transaksi=transaksi_pagination.page
+        ) }}">
+            ← Prev
+        </a>
+    {% endif %}
+
+    {% for page_num in pengeluaran_pagination.iter_pages() %}
+
+        {% if page_num %}
+
+            {% if page_num == pengeluaran_pagination.page %}
+                <span class="active-page">
+                    {{ page_num }}
+                </span>
             {% else %}
-            <p style="color:#777;">Tidak ada transaksi.</p>
+                <a href="{{ url_for(
+                    'laporan_detail',
+                    cabang=laporan.cabang,
+                    tanggal=laporan.tanggal,
+                    page_pengeluaran=page_num,
+                    page_transaksi=transaksi_pagination.page
+                ) }}">
+                    {{ page_num }}
+                </a>
             {% endif %}
+
+        {% endif %}
+
+    {% endfor %}
+
+    {% if pengeluaran_pagination.has_next %}
+        <a href="{{ url_for(
+            'laporan_detail',
+            cabang=laporan.cabang,
+            tanggal=laporan.tanggal,
+            page_pengeluaran=pengeluaran_pagination.next_num,
+            page_transaksi=transaksi_pagination.page
+        ) }}">
+            Next →
+        </a>
+    {% endif %}
+
+</div>
+                {% else %}
+                <p class="empty-text">
+                    Tidak ada pengeluaran.
+                </p>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- ================= RIGHT SIDE ================= -->
+        <div class="split-right">
+
+            <div class="card detail-card-premium">
+
+                <div class="card-header-premium transaksi-header">
+
+                    <h3>Transaksi</h3>
+
+                </div>
+
+                {% if transaksi %}
+
+                <div class="table-responsive">
+
+                    <table class="premium-table">
+
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Material</th>
+                                <th>Jenis Truck</th>
+                                <th>Kubikasi</th>
+                                <th>Metode</th>
+                                <th>Total</th>
+                                <th>Nota</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for t in transaksi %}
+                            <tr>
+
+                                <td>
+                                    {{ (transaksi_pagination.page - 1) * 10 + loop.index }}
+                                </td>
+
+                                <td>
+                                    {{ t.material.nama }}
+                                </td>
+
+                                <td>
+                                    {{ t.jenis_truck }}
+                                </td>
+
+                                <td>
+                                    {{ "%.2f"|format(t.kubikasi) }} m³
+                                </td>
+
+                                <td>
+                                    {{ t.metode }}
+                                </td>
+
+                                <td style="white-space: nowrap;">
+                                    Rp {{ "{:,.0f}".format(t.jumlah).replace(",", ".") }}
+                                </td>
+
+                                <td class="col-nota">
+
+                                    <a href="{{ url_for('nota_transaksi', id=t.id) }}"
+                                       class="btn-nota"
+                                       target="_blank">
+
+                                        <i class="fas fa-file-invoice"></i>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+<!-- PAGINATION TRANSAKSI -->
+<div class="pagination-modern">
+
+    {% if transaksi_pagination.has_prev %}
+        <a href="{{ url_for(
+            'laporan_detail',
+            cabang=laporan.cabang,
+            tanggal=laporan.tanggal,
+            page_transaksi=transaksi_pagination.prev_num,
+            page_pengeluaran=pengeluaran_pagination.page
+        ) }}">
+            ← Prev
+        </a>
+    {% endif %}
+
+    {% for page_num in transaksi_pagination.iter_pages() %}
+
+        {% if page_num %}
+
+            {% if page_num == transaksi_pagination.page %}
+                <span class="active-page">
+                    {{ page_num }}
+                </span>
+            {% else %}
+                <a href="{{ url_for(
+                    'laporan_detail',
+                    cabang=laporan.cabang,
+                    tanggal=laporan.tanggal,
+                    page_transaksi=page_num,
+                    page_pengeluaran=pengeluaran_pagination.page
+                ) }}">
+                    {{ page_num }}
+                </a>
+            {% endif %}
+
+        {% endif %}
+
+    {% endfor %}
+
+    {% if transaksi_pagination.has_next %}
+        <a href="{{ url_for(
+            'laporan_detail',
+            cabang=laporan.cabang,
+            tanggal=laporan.tanggal,
+            page_transaksi=transaksi_pagination.next_num,
+            page_pengeluaran=pengeluaran_pagination.page
+        ) }}">
+            Next →
+        </a>
+    {% endif %}
+
+</div>
+                </div>
+
+                {% else %}
+                <p class="empty-text">
+                    Tidak ada transaksi.
+                </p>
+                {% endif %}
+
+            </div>
+
         </div>
 
     </div>

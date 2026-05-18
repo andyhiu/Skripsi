@@ -3,12 +3,27 @@
 
 <div class="konfirmasi-page">
 
-    <!-- HEADER -->
-    <div class="konfirmasi-header">
-        <h2>Konfirmasi Stok - {{ current_user.cabang }}</h2>
-        <p>Halaman ini digunakan untuk mengkonfirmasi stok material yang dikirim dari admin pusat.</p>
+<!-- HERO -->
+<div class="global-hero">
+
+    <div class="global-hero-content">
+
+        <span class="global-badge">
+            Konfirmasi Stok
+        </span>
+
+        <h1>
+            Konfirmasi Stok - {{ current_user.cabang }}
+        </h1>
+
+        <p>
+            Halaman ini digunakan untuk mengkonfirmasi stok material
+            yang dikirim dari admin pusat secara terintegrasi.
+        </p>
+
     </div>
 
+</div>
 
     {% if data|length == 0 %}
 
@@ -17,9 +32,17 @@
 
         <div class="konfirmasi-empty-card">
 
-            <div class="konfirmasi-empty-icon">
-                📦
-            </div>
+        <div class="konfirmasi-empty-icon">
+
+            <svg width="70" height="70" fill="none" stroke="currentColor"
+                 stroke-width="1.8" viewBox="0 0 24 24">
+
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M20 7L12 3 4 7m16 0v10l-8 4m8-14-8 4m0 10L4 17V7m8 14V11M4 7l8 4"/>
+
+            </svg>
+
+        </div>
 
             <h3>Belum Ada Pengiriman Stok</h3>
 
@@ -52,7 +75,18 @@
 
         <div class="konfirmasi-summary-card">
 
-            <div class="summary-icon">🚚</div>
+            <div class="summary-icon">
+
+                <svg width="34" height="34" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9 17H6a2 2 0 01-2-2V7a2 2 0 012-2h9a2 2 0 012 2v10m-8 0a2 2 0 104 0m-4 0H9m4 0h3m3 0a2 2 0 104 0m-4 0h-1m1 0V11l3 3v3"/>
+
+                </svg>
+
+            </div>
 
             <div class="summary-text">
                 <h4>Total Pengiriman</h4>
@@ -63,7 +97,21 @@
 
         <div class="konfirmasi-summary-card">
 
-            <div class="summary-icon">⏳</div>
+                    <div class="summary-icon status-icon">
+
+            <svg width="34" height="34"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+
+            </svg>
+
+        </div>
 
             <div class="summary-text">
                 <h4>Status</h4>

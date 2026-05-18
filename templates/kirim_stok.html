@@ -2,10 +2,30 @@
 
 {% block content %}
 
-<div class="page-header">
-    <h2>Kirim Stok ke Cabang</h2>
-</div>
+<div class="kirim-topbar">
 
+    <div class="kirim-topbar-left">
+
+        <span class="kirim-mini-badge">
+            Distribusi Material
+        </span>
+
+        <h2>Kirim Stok ke Cabang</h2>
+
+        <p>
+            Kelola pengiriman stok material dari pusat ke cabang operasional perusahaan.
+        </p>
+
+    </div>
+
+    <div class="kirim-topbar-right">
+
+        <span>Total Pengiriman</span>
+        <h3>{{ pagination.total }}</h3>
+
+    </div>
+
+</div>
 <div class="split-layout kirim-layout-fix">
 
     <!-- ================= LEFT SIDE ================= -->

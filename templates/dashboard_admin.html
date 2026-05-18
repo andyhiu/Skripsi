@@ -1,60 +1,114 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="dashboard-admin-wrapper">
+<div class="dashboard-v2">
 
-    <div class="dashboard-header">
-        <h2>Dashboard Admin Pusat</h2>
-        <p>Ringkasan Keuangan Sistem</p>
+    <!-- HERO -->
+    <div class="dashboard-hero">
+
+        <div class="hero-left">
+            <span class="hero-badge">PT Sampurna Abadi Makmur</span>
+
+            <h1>Dashboard Admin Pusat</h1>
+
+            <p>
+                Monitoring keuangan, laporan cabang,
+                dan aktivitas operasional perusahaan.
+            </p>
+        </div>
+
+        <div class="hero-right">
+            <div class="hero-profit-card">
+                <span>Total Profit</span>
+
+                <h2>
+                    Rp {{ "{:,.0f}".format(total_pemasukan - total_pengeluaran).replace(",", ".") }}
+                </h2>
+
+                <small>Ringkasan profit bulan ini</small>
+            </div>
+        </div>
+
     </div>
 
-    <!-- FILTER -->
-    <div class="dashboard-topbar">
+    <!-- FILTER BAR -->
+<div class="dashboard-filter-bar">
 
-        <div class="cabang-filter">
+    <div class="dashboard-filter-group">
+
+        <span class="filter-title">
+            Pilih Cabang
+        </span>
+
+        <div class="dashboard-filter-left">
+
             <a href="{{ url_for('dashboard') }}"
-               class="filter-btn {% if not cabang_filter %}active-filter{% endif %}">
+               class="dashboard-filter-btn {% if not cabang_filter %}active-dashboard-filter{% endif %}">
                 Semua
             </a>
 
             <a href="{{ url_for('dashboard', cabang='Tuban', bulan=bulan_input) }}"
-               class="filter-btn {% if cabang_filter == 'Tuban' %}active-filter{% endif %}">
+               class="dashboard-filter-btn {% if cabang_filter == 'Tuban' %}active-dashboard-filter{% endif %}">
                 Tuban
             </a>
 
             <a href="{{ url_for('dashboard', cabang='Mahendradatta', bulan=bulan_input) }}"
-               class="filter-btn {% if cabang_filter == 'Mahendradatta' %}active-filter{% endif %}">
+               class="dashboard-filter-btn {% if cabang_filter == 'Mahendradatta' %}active-dashboard-filter{% endif %}">
                 Mahendradatta
             </a>
-        </div>
 
-        <form method="GET" class="grafik-filter-form">
-            <input type="month" name="bulan" value="{{ bulan_input }}" class="month-input">
-            <button type="submit" class="filter-submit">Filter</button>
-        </form>
+        </div>
 
     </div>
 
-    <!-- CARD -->
-    <div class="dashboard-cards">
+    <form method="GET" class="dashboard-filter-form">
 
-        <div class="stat-card blue">
-            <h4>Total Pemasukan</h4>
+        <div class="dashboard-month-wrapper">
+
+            <span class="filter-title">
+                Pilih Periode
+            </span>
+
+            <div class="dashboard-month-box">
+
+                <input type="month"
+                       name="bulan"
+                       value="{{ bulan_input }}"
+                       class="dashboard-month-input">
+
+                <button type="submit" class="dashboard-filter-submit">
+                    Filter
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+    <!-- STAT CARD -->
+    <div class="dashboard-stat-grid">
+
+        <div class="dashboard-stat-card income-card">
+            <span>Total Pemasukan</span>
             <h2>Rp {{ "{:,.0f}".format(total_pemasukan).replace(",", ".") }}</h2>
         </div>
 
-        <div class="stat-card red">
-            <h4>Total Pengeluaran</h4>
+        <div class="dashboard-stat-card expense-card">
+            <span>Total Pengeluaran</span>
             <h2>Rp {{ "{:,.0f}".format(total_pengeluaran).replace(",", ".") }}</h2>
         </div>
 
-        <div class="stat-card gray">
-            <h4>Total Laporan</h4>
+        <div class="dashboard-stat-card report-card">
+            <span>Total Laporan</span>
             <h2>{{ total_laporan }}</h2>
         </div>
 
-        <div class="stat-card green">
-            <h4>Profit</h4>
+        <div class="dashboard-stat-card profit-card">
+            <span>Total Profit</span>
+
             <h2>
                 Rp {{ "{:,.0f}".format(total_pemasukan - total_pengeluaran).replace(",", ".") }}
             </h2>
@@ -62,62 +116,85 @@
 
     </div>
 
-    <!-- MAIN -->
-    <div class="dashboard-main">
+    <!-- MAIN GRID -->
+    <div class="dashboard-main-grid">
 
         <!-- LEFT -->
-        <div class="left-section">
+        <div class="dashboard-left">
 
-            <!-- CHART -->
-            <div class="card grafik-card">
-                <h4>Grafik Keuangan</h4>
+            <!-- MAIN CHART -->
+            <div class="dashboard-card dashboard-chart-card">
+
+                <div class="dashboard-card-header">
+                    <h3>Grafik Keuangan</h3>
+                    <span>Monitoring pemasukan & pengeluaran</span>
+                </div>
+
                 <canvas id="mainChart"></canvas>
+
             </div>
 
-            <!-- DOUGHNUT ONLY -->
-            <div class="card">
-                <h4>Distribusi Pemasukan Cabang</h4>
-                <div style="height: 250px; display: flex; justify-content: center; align-items: center;">
+            <!-- DONUT -->
+            <div class="dashboard-card dashboard-donut-card">
+
+                <div class="dashboard-card-header">
+                    <h3>Distribusi Cabang</h3>
+                    <span>Persentase pemasukan cabang</span>
+                </div>
+
+                <div class="dashboard-donut-wrapper">
                     <canvas id="cabangChart"></canvas>
                 </div>
+
             </div>
 
         </div>
 
         <!-- RIGHT -->
-        <div class="right-section">
+        <div class="dashboard-right">
 
             <!-- RANKING -->
-            <div class="card ranking-card">
-                <h4>Sales Ranking Cabang</h4>
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+                    <h3>Sales Ranking</h3>
+                </div>
 
                 {% for r in ranking_data %}
-                <div class="ranking-row">
-                    <span class="rank">{{ loop.index }}</span>
-                    <span class="name">{{ r.cabang }}</span>
-                    <span class="amount">
+                <div class="dashboard-ranking-row">
+
+                    <div class="dashboard-ranking-left">
+                        <span class="ranking-number">{{ loop.index }}</span>
+                        <span>{{ r.cabang }}</span>
+                    </div>
+
+                    <strong>
                         Rp {{ "{:,.0f}".format(r.total).replace(",", ".") }}
-                    </span>
+                    </strong>
+
                 </div>
                 {% endfor %}
 
             </div>
 
             <!-- SUMMARY -->
-            <div class="card side-info">
-                <h4>Ringkasan</h4>
+            <div class="dashboard-card">
 
-                <div class="summary-row">
+                <div class="dashboard-card-header">
+                    <h3>Ringkasan</h3>
+                </div>
+
+                <div class="dashboard-summary-row">
                     <span>Pemasukan</span>
                     <strong>Rp {{ "{:,.0f}".format(total_pemasukan).replace(",", ".") }}</strong>
                 </div>
 
-                <div class="summary-row">
+                <div class="dashboard-summary-row">
                     <span>Pengeluaran</span>
                     <strong>Rp {{ "{:,.0f}".format(total_pengeluaran).replace(",", ".") }}</strong>
                 </div>
 
-                <div class="summary-row">
+                <div class="dashboard-summary-row">
                     <span>Profit</span>
                     <strong>
                         Rp {{ "{:,.0f}".format(total_pemasukan - total_pengeluaran).replace(",", ".") }}
@@ -126,14 +203,22 @@
 
             </div>
 
-            <!-- MATERIAL (PINDAH KE SINI) -->
-            <div class="card">
-                <h4>Daftar Material</h4>
+            <!-- MATERIAL -->
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+                    <h3>Daftar Material</h3>
+                </div>
 
                 {% for m in materials %}
-                <div class="list-item">
+                <div class="dashboard-material-row">
+
                     <span>{{ m.nama }}</span>
-                    <strong>Rp {{ "{:,.0f}".format(m.harga).replace(",", ".") }}</strong>
+
+                    <strong>
+                        Rp {{ "{:,.0f}".format(m.harga).replace(",", ".") }}
+                    </strong>
+
                 </div>
                 {% endfor %}
 
@@ -155,35 +240,52 @@ const pengeluaran = JSON.parse('{{ pengeluaran_per_bulan | tojson | safe }}');
 const cabangLabels = JSON.parse('{{ cabang_labels | tojson | safe }}');
 const cabangData = JSON.parse('{{ cabang_totals | tojson | safe }}');
 
-// BAR
 new Chart(document.getElementById('mainChart'), {
     type: 'bar',
     data: {
         labels: labels,
         datasets: [
-            { label: 'Pemasukan', data: pemasukan, backgroundColor: '#1f70d8' },
-            { label: 'Pengeluaran', data: pengeluaran, backgroundColor: '#dc3545' }
+            {
+                label: 'Pemasukan',
+                data: pemasukan,
+                backgroundColor: '#2563eb',
+                borderRadius: 8
+            },
+            {
+                label: 'Pengeluaran',
+                data: pengeluaran,
+                backgroundColor: '#ef4444',
+                borderRadius: 8
+            }
         ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
     }
 });
 
-// DOUGHNUT
 new Chart(document.getElementById('cabangChart'), {
     type: 'doughnut',
     data: {
         labels: cabangLabels,
         datasets: [{
             data: cabangData,
-            backgroundColor: ['#1f70d8', '#28a745', '#ffc107', '#dc3545'],
-            borderWidth: 2,
-            borderColor: '#fff',
-            hoverOffset: 10
+            backgroundColor: [
+                '#2563eb',
+                '#22c55e',
+                '#f59e0b',
+                '#ef4444'
+            ],
+            borderWidth: 0
         }]
     },
     options: {
-        cutout: '65%',
+        cutout: '70%',
         plugins: {
-            legend: { position: 'bottom' }
+            legend: {
+                position: 'bottom'
+            }
         }
     }
 });

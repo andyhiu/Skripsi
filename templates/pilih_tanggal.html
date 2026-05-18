@@ -2,80 +2,229 @@
 {% block content %}
 
 <!-- ================= HEADER ================= -->
-<div class="laporan-header">
-    <h2>Buat Laporan Harian</h2>
+<!-- HERO GLOBAL -->
+<div class="global-hero laporan-mini-hero">
 
-    <p>
-        Cabang : <strong>{{ cabang }}</strong>
-    </p>
+    <div class="global-hero-content">
 
-    <p>
-        Pilih tanggal untuk membuat atau melanjutkan laporan transaksi
-        dan pengeluaran pada cabang Anda.
-    </p>
-</div>
+        <span class="global-badge">
+            Laporan Cabang
+        </span>
 
+        <h1>
+            Buat Laporan Harian
+        </h1>
 
-<!-- ================= MAIN CARD ================= -->
-<div class="laporan-tanggal-wrapper">
-
-    <div class="laporan-tanggal-card">
-
-        <div class="tanggal-icon">
-            📅
-        </div>
-
-        <h3 class="tanggal-title">
-            Pilih Tanggal Laporan
-        </h3>
-
-        <p class="tanggal-desc">
-            Laporan harian digunakan untuk mencatat transaksi
-            material dan pengeluaran operasional pada tanggal tertentu.
+        <p>
+            Pilih tanggal untuk membuat atau melanjutkan laporan
+            transaksi dan pengeluaran cabang
+            <strong>{{ cabang }}</strong>.
         </p>
 
-        <form method="GET"
-              action="{{ url_for('laporan_cabang') }}"
-              class="laporan-tanggal-form">
+    </div>
 
-            <div class="tanggal-input-group">
+    <div class="global-hero-mini">
 
-                <label class="center-label">Tanggal Laporan</label>
+        <span>Cabang Aktif</span>
 
-                <input type="text"
-                       name="tanggal"
-                       class="datepicker tanggal-input"
-                       value="{{ today }}"
-                       required>
-
-                <small class="tanggal-helper">
-                    Pilih tanggal laporan yang ingin dibuat atau dilanjutkan
-                </small>
-
-            </div>
-
-            <button type="submit" class="btn-primary mulai-btn">
-                Mulai Laporan
-            </button>
-
-        </form>
+        <h2>{{ cabang }}</h2>
 
     </div>
 
 </div>
 
 
-<!-- ================= INFO BOX ================= -->
-<div class="laporan-info-box">
+<!-- ================= MAIN CARD ================= -->
+<!-- ================= MAIN PREMIUM CARD ================= -->
+<div class="laporan-modern-wrapper">
 
-    <h4>Informasi</h4>
+    <div class="laporan-modern-card">
 
-    <ul>
-        <li>Setiap tanggal hanya memiliki satu laporan.</li>
-        <li>Jika laporan sudah dibuat sebelumnya, sistem akan membuka laporan tersebut.</li>
-        <li>Laporan akan dikunci setelah ditutup.</li>
-    </ul>
+        <!-- LEFT -->
+        <div class="laporan-modern-left">
+
+            <div class="tanggal-icon">
+
+                <svg width="70"
+                     height="70"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+
+                    <rect x="3"
+                          y="5"
+                          width="18"
+                          height="16"
+                          rx="4"
+                          fill="url(#paint0_linear)"/>
+
+                    <path d="M8 3V7"
+                          stroke="white"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <path d="M16 3V7"
+                          stroke="white"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <path d="M3 10H21"
+                          stroke="white"
+                          stroke-width="2"/>
+
+                    <circle cx="8"
+                            cy="14"
+                            r="1"
+                            fill="white"/>
+
+                    <circle cx="12"
+                            cy="14"
+                            r="1"
+                            fill="white"/>
+
+                    <circle cx="16"
+                            cy="14"
+                            r="1"
+                            fill="white"/>
+
+                    <defs>
+
+                        <linearGradient id="paint0_linear"
+                                        x1="3"
+                                        y1="5"
+                                        x2="21"
+                                        y2="21"
+                                        gradientUnits="userSpaceOnUse">
+
+                            <stop stop-color="#0f3d7a"/>
+
+                            <stop offset="1"
+                                  stop-color="#2563eb"/>
+
+                        </linearGradient>
+
+                    </defs>
+
+                </svg>
+
+            </div>
+
+            <h3 class="laporan-modern-title">
+                Pilih Tanggal Laporan
+            </h3>
+
+            <p class="laporan-modern-desc">
+                Pilih tanggal untuk membuat atau melanjutkan laporan transaksi
+                dan pengeluaran operasional cabang.
+            </p>
+
+            <form method="GET"
+                  action="{{ url_for('laporan_cabang') }}"
+                  class="laporan-modern-form">
+
+                <div class="laporan-modern-input">
+
+                    <label>
+                        Tanggal Laporan
+                    </label>
+
+                    <input type="text"
+                           name="tanggal"
+                           class="datepicker laporan-modern-datepicker"
+                           value="{{ today }}"
+                           required>
+
+                    <small>
+                        Sistem otomatis membuka laporan jika tanggal sudah pernah dibuat.
+                    </small>
+
+                </div>
+
+                <button type="submit"
+                        class="btn-primary laporan-modern-btn">
+
+                    Mulai Laporan
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="laporan-modern-right">
+
+            <div class="laporan-note-box">
+
+                <div class="laporan-note-icon">
+
+                    <svg width="55"
+                         height="55"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+
+                        <circle cx="12"
+                                cy="12"
+                                r="10"
+                                fill="url(#paintInfo)"/>
+
+                        <path d="M12 17V11"
+                              stroke="white"
+                              stroke-width="2"
+                              stroke-linecap="round"/>
+
+                        <circle cx="12"
+                                cy="8"
+                                r="1"
+                                fill="white"/>
+
+                        <defs>
+
+                            <linearGradient id="paintInfo"
+                                            x1="2"
+                                            y1="2"
+                                            x2="22"
+                                            y2="22">
+
+                                <stop stop-color="#0f3d7a"/>
+
+                                <stop offset="1"
+                                      stop-color="#2563eb"/>
+
+                            </linearGradient>
+
+                        </defs>
+
+                    </svg>
+
+                </div>
+
+                <h4>Informasi Sistem</h4>
+
+                <ul>
+
+                    <li>
+                        Setiap tanggal hanya memiliki satu laporan harian.
+                    </li>
+
+                    <li>
+                        Sistem otomatis melanjutkan laporan jika sudah pernah dibuat.
+                    </li>
+
+                    <li>
+                        Laporan yang telah ditutup tidak dapat diedit kembali.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
+
 
 {% endblock %}

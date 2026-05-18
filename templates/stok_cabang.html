@@ -1,17 +1,56 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container">
+<div class="stok-page container">
 
-    <div class="page-header">
-        <h2>Stok Cabang {{ cabang }}</h2>
+    <!-- HERO -->
+    <div class="global-hero">
+
+        <div class="global-hero-content">
+
+            <span class="global-badge">
+                Monitoring Stok Cabang
+            </span>
+
+            <h1>
+                Stok Cabang {{ cabang }}
+            </h1>
+
+            <p>
+                Halaman ini menampilkan total stok material yang tersedia
+                pada cabang {{ cabang }} secara realtime dan terintegrasi.
+            </p>
+
+        </div>
+
+        <div class="global-hero-mini">
+
+            <span>Total Material</span>
+
+            <h2>
+                {{ data|length }}
+            </h2>
+
+        </div>
+
     </div>
 
-    <div class="card">
+    <!-- CARD -->
+    <div class="stok-card">
+
+        <div class="stok-card-header">
+
+            <h3>Daftar Stok Material</h3>
+
+            <span class="stok-badge">
+                {{ data|length }} Material
+            </span>
+
+        </div>
 
         <div class="table-wrapper">
 
-            <table class="table">
+            <table class="table stok-table">
 
                 <thead>
                     <tr>
@@ -24,27 +63,69 @@
                 <tbody>
 
                 {% for d in data %}
+
                 <tr>
-                    <td>{{ loop.index }}</td>
 
                     <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+
                         {% for m in materials %}
                             {% if m.id == d.material_id %}
                                 {{ m.nama }}
                             {% endif %}
                         {% endfor %}
+
                     </td>
 
-                    <td>{{ "%.2f"|format(d.total_kubik) }} m³</td>
+                    <td class="stok-total">
+                        {{ "%.2f"|format(d.total_kubik) }} m³
+                    </td>
+
                 </tr>
+
                 {% endfor %}
 
                 {% if data|length == 0 %}
+
                 <tr>
-                    <td colspan="3" style="text-align:center;">
-                        Belum ada stok
+
+                    <td colspan="3">
+
+                        <div class="stok-empty">
+
+                            <div class="stok-empty-icon">
+
+                                <svg width="70"
+                                     height="70"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8"
+                                     viewBox="0 0 24 24">
+
+                                    <path stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          d="M20 7L12 3 4 7m16 0v10l-8 4m8-14-8 4m0 10L4 17V7m8 14V11M4 7l8 4"/>
+
+                                </svg>
+
+                            </div>
+
+                            <h4>Belum Ada Stok</h4>
+
+                            <p>
+                                Saat ini belum ada data stok material
+                                pada cabang {{ cabang }}.
+                            </p>
+
+                        </div>
+
                     </td>
+
                 </tr>
+
                 {% endif %}
 
                 </tbody>

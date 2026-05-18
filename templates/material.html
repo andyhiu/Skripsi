@@ -2,85 +2,192 @@
 
 {% block content %}
 
-<div class="page-header">
-    <h2>Kelola Material</h2>
-</div>
+<div class="global-page">
 
-<div class="split-layout">
+    <!-- HERO -->
+    <div class="global-hero">
 
-    <!-- ================= LEFT SIDE (FORM) ================= -->
-    <div class="split-left">
-        <div class="form-box premium-material-form">
-            <form method="POST" class="form-grid">
+        <div>
 
-                <div>
+            <span class="global-badge">
+                Material Management
+            </span>
+
+            <h1>Kelola Material</h1>
+
+            <p>
+                Kelola data material, harga material,
+                dan informasi kebutuhan operasional perusahaan.
+            </p>
+
+        </div>
+
+        <div class="global-hero-mini">
+
+            <span>Total Material</span>
+
+            <h2>
+                {{ data|length }}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="global-grid grid-2 material-layout-wide">
+
+        <!-- LEFT -->
+        <div class="global-card">
+
+            <div class="global-section-title">
+
+                <h3>Tambah Material</h3>
+
+                <span>
+                    Tambahkan material baru ke sistem
+                </span>
+
+            </div>
+
+            <form method="POST" class="global-form">
+
+                <div class="global-input-group">
+
                     <label>Nama Material</label>
+
                     <input type="text"
                            name="nama"
-                           placeholder="Input Material Baru">
+                           placeholder="Masukkan nama material"
+                           required>
+
                 </div>
 
-                <div>
-                    <label>Harga</label>
+                <div class="global-input-group">
+
+                    <label>Harga Material</label>
+
                     <input type="number"
                            name="harga"
-                           placeholder="Input Harga Baru"
+                           placeholder="Masukkan harga material"
                            min="0"
                            step="1"
                            required>
+
                 </div>
 
-                <div class="full button-wrapper">
-                    <button type="submit">Tambah Material</button>
-                </div>
+                <button type="submit"
+                        class="btn-primary">
+
+                    Tambah Material
+
+                </button>
 
             </form>
+
         </div>
-    </div>
 
-    <!-- ================= RIGHT SIDE (TABLE) ================= -->
-    <div class="split-right">
-        <div class="card">
+        <!-- RIGHT -->
+        <div class="global-card material-table-card">
+
+            <div class="global-section-title">
+
+                <h3>Daftar Material</h3>
+
+                <span>
+                    Data material dan harga yang tersedia
+                </span>
+
+            </div>
+
             <div class="table-responsive">
-                <table class="premium-table">
+
+                <table class="global-table">
+
                     <thead>
+
                         <tr>
-                            <th>Nama</th>
+
+                            <th>Material</th>
                             <th>Harga</th>
-                            <th class="text-center">Aksi</th>
+                            <th>Aksi</th>
+
                         </tr>
+
                     </thead>
+
                     <tbody>
+
                         {% for m in data %}
+
                         <tr>
-                            <td data-label="Nama">{{ m.nama }}</td>
 
-                            <td data-label="Harga">
-                                Rp {{ "{:,.0f}".format(m.harga).replace(",", ".") }}
-                            </td>
+                            <!-- MATERIAL -->
+                            <td>
 
-                            <td data-label="Aksi" class="aksi-cell">
+                                <div class="material-info-cell">
 
-                                <div class="aksi-wrapper">
-                                    <a href="{{ url_for('edit_material', id=m.id) }}" class="btn-edit">
-                                        ✏ Edit
-                                    </a>
+                                    <div class="material-icon">
+                                        📦
+                                    </div>
 
-                                    <a href="#"
-                                       class="btn-delete"
-                                       data-id="{{ m.id }}"
-                                       onclick="openDeleteModal(this)">
-                                        🗑 Hapus
-                                    </a>
+                                    <span>
+                                        {{ m.nama }}
+                                    </span>
+
                                 </div>
 
                             </td>
+
+                            <!-- HARGA -->
+                            <td>
+
+                                <div class="material-price">
+
+                                    Rp
+                                    {{ "{:,.0f}".format(m.harga).replace(",", ".") }}
+
+                                </div>
+
+                            </td>
+
+                            <!-- AKSI -->
+                            <td>
+
+                                <div class="global-action">
+
+                                    <a href="{{ url_for('edit_material', id=m.id) }}"
+                                       class="btn-action btn-primary">
+
+                                        ✏ Edit
+
+                                    </a>
+
+                                    <a href="#"
+                                       class="btn-action btn-danger"
+                                       data-id="{{ m.id }}"
+                                       onclick="openDeleteModal(this)">
+
+                                        🗑 Hapus
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
                         </tr>
+
                         {% endfor %}
+
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
+
     </div>
 
 </div>
@@ -92,39 +199,72 @@
 {% block modal %}
 
 <div id="deleteModal" class="custom-modal">
+
     <div class="modal-content">
+
         <h3>⚠ Konfirmasi Hapus</h3>
-        <p>Yakin ingin menghapus material ini?</p>
+
+        <p>
+            Yakin ingin menghapus material ini?
+        </p>
 
         <div class="modal-actions">
-            <button type="button" onclick="closeDeleteModal()" class="btn-cancel">
+
+            <button type="button"
+                    onclick="closeDeleteModal()"
+                    class="btn-cancel">
+
                 Batal
+
             </button>
 
-            <a id="confirmDeleteBtn" class="btn-delete">
+            <a id="confirmDeleteBtn"
+               class="btn-delete">
+
                 Ya, Hapus
+
             </a>
+
         </div>
+
     </div>
+
 </div>
 
 <script>
-function openDeleteModal(element) {
-    const materialId = element.getAttribute("data-id");
-    document.getElementById("confirmDeleteBtn").href = "/delete_material/" + materialId;
-    document.getElementById("deleteModal").style.display = "flex";
+
+function openDeleteModal(element){
+
+    const materialId =
+        element.getAttribute("data-id");
+
+    document.getElementById(
+        "confirmDeleteBtn"
+    ).href = "/delete_material/" + materialId;
+
+    document.getElementById(
+        "deleteModal"
+    ).style.display = "flex";
 }
 
-function closeDeleteModal() {
-    document.getElementById("deleteModal").style.display = "none";
+function closeDeleteModal(){
+
+    document.getElementById(
+        "deleteModal"
+    ).style.display = "none";
 }
 
-window.onclick = function(event) {
-    const modal = document.getElementById("deleteModal");
-    if (event.target === modal) {
+window.onclick = function(event){
+
+    const modal =
+        document.getElementById("deleteModal");
+
+    if(event.target === modal){
+
         modal.style.display = "none";
     }
 }
+
 </script>
 
 {% endblock %}

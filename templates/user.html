@@ -2,142 +2,318 @@
 
 {% block content %}
 
-<div class="page-header">
-    <h2>Manajemen User</h2>
-</div>
+<div class="global-page">
 
-<div class="split-layout">
+    <!-- HERO -->
+    <div class="global-hero">
 
-    <!-- ================= LEFT SIDE (FORM) ================= -->
-    <div class="split-left">
-        <div class="form-box premium-user-form">
-            <form method="POST" class="form-grid">
+        <div>
 
-                <div>
-                    <label>Username</label>
-                    <input type="text"
-                           name="username"
-                           placeholder="Input Username"
-                           required>
-                </div>
+            <span class="global-badge">
+                User Management
+            </span>
 
-                <div>
-                    <label>Password</label>
-                    <input type="password"
-                           name="password"
-                           placeholder="Input Password"
-                           required>
-                </div>
+            <h1>Manajemen User</h1>
 
-                <div>
-                    <label>Role</label>
-                    <select name="role">
-                        <option value="admin">Admin</option>
-                        <option value="cabang">Cabang</option>
-                    </select>
-                </div>
+            <p>
+                Kelola akun pengguna sistem,
+                role akses, dan cabang operasional perusahaan.
+            </p>
 
-                <div>
-                    <label>Cabang</label>
-                    <select name="cabang">
-                        <option value="Pusat">Pusat</option>
-                        <option value="Tuban">Tuban</option>
-                        <option value="Mahendradatta">Mahendradatta</option>
-                    </select>
-                </div>
-
-                <div class="full button-wrapper">
-                    <button type="submit">Tambah User</button>
-                </div>
-
-            </form>
         </div>
+
+        <div class="global-hero-mini">
+
+            <span>Total User</span>
+
+            <h2>
+                {{ data|length }}
+            </h2>
+
+        </div>
+
     </div>
 
-    <!-- ================= RIGHT SIDE (TABLE) ================= -->
-    <div class="split-right">
-        <div class="card">
+    <!-- CONTENT -->
+    <div class="global-grid grid-2 user-layout-wide">
+
+        <!-- LEFT -->
+        <div class="global-card">
+
+            <div class="global-section-title">
+
+                <h3>Tambah User Baru</h3>
+
+                <span>
+                    Input data akun pengguna sistem
+                </span>
+
+            </div>
+
+            <form method="POST" class="global-form">
+
+                <div class="global-input-group">
+
+                    <label>Username</label>
+
+                    <input type="text"
+                           name="username"
+                           placeholder="Masukkan username"
+                           required>
+
+                </div>
+
+                <div class="global-input-group">
+
+                    <label>Password</label>
+
+                    <input type="password"
+                           name="password"
+                           placeholder="Masukkan password"
+                           required>
+
+                </div>
+
+                <div class="global-input-group">
+
+                    <label>Role</label>
+
+                    <select name="role">
+
+                        <option value="admin">
+                            Admin
+                        </option>
+
+                        <option value="cabang">
+                            Cabang
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="global-input-group">
+
+                    <label>Cabang</label>
+
+                    <select name="cabang">
+
+                        <option value="Pusat">
+                            Pusat
+                        </option>
+
+                        <option value="Tuban">
+                            Tuban
+                        </option>
+
+                        <option value="Mahendradatta">
+                            Mahendradatta
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button type="submit"
+                        class="btn-primary">
+
+                    Tambah User
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="global-card user-table-card">
+
+            <div class="global-section-title">
+
+                <h3>Daftar User</h3>
+
+                <span>
+                    Data pengguna sistem yang terdaftar
+                </span>
+
+            </div>
+
             <div class="table-responsive">
-                <table class="premium-table">
+
+                <table class="global-table">
+
                     <thead>
+
                         <tr>
+
                             <th>Username</th>
                             <th>Role</th>
                             <th>Cabang</th>
                             <th>Aksi</th>
+
                         </tr>
+
                     </thead>
+
                     <tbody>
+
                         {% for u in data %}
+
                         <tr>
-                            <td data-label="Username">{{ u.username }}</td>
-                            <td data-label="Role">{{ u.role }}</td>
-                            <td data-label="Cabang">{{ u.cabang }}</td>
-                            <td data-label="Aksi">
 
-                                <a href="{{ url_for('edit_user', id=u.id) }}" class="btn-edit">
-                                    ✏ Edit
-                                </a>
+                            <!-- USERNAME -->
+                            <td>
 
-                                <a href="#"
-                                   class="btn-delete"
-                                   data-id="{{ u.id }}"
-                                   onclick="openDeleteModal(this)">
-                                    🗑 Hapus
-                                </a>
+                                <div class="user-info-cell">
+
+                                    <div class="user-avatar-table">
+                                        {{ u.username[0]|upper }}
+                                    </div>
+
+                                    <span>
+                                        {{ u.username }}
+                                    </span>
+
+                                </div>
 
                             </td>
+
+                            <!-- ROLE -->
+                            <td>
+
+                                {% if u.role == 'admin' %}
+
+                                    <span class="global-pill global-badge-primary">
+                                        Admin
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="global-pill global-badge-success">
+                                        Cabang
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- CABANG -->
+                            <td>
+                                {{ u.cabang }}
+                            </td>
+
+                            <!-- AKSI -->
+                            <td>
+
+                                <div class="global-action">
+
+                                    <a href="{{ url_for('edit_user', id=u.id) }}"
+                                       class="btn-action btn-primary">
+
+                                        ✏ Edit
+
+                                    </a>
+
+                                    <a href="#"
+                                       class="btn-action btn-danger"
+                                       data-id="{{ u.id }}"
+                                       onclick="openDeleteModal(this)">
+
+                                        🗑 Hapus
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
                         </tr>
+
                         {% endfor %}
+
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
+
     </div>
 
 </div>
 
 {% endblock %}
 
-
-
 {% block modal %}
 
 <div id="deleteModal" class="custom-modal">
+
     <div class="modal-content">
+
         <h3>⚠ Konfirmasi Hapus</h3>
-        <p>Yakin ingin menghapus user ini?</p>
+
+        <p>
+            Yakin ingin menghapus user ini?
+        </p>
 
         <div class="modal-actions">
-            <button type="button" onclick="closeDeleteModal()" class="btn-cancel">
+
+            <button type="button"
+                    onclick="closeDeleteModal()"
+                    class="btn-cancel">
+
                 Batal
+
             </button>
 
-            <a id="confirmDeleteBtn" class="btn-delete">
+            <a id="confirmDeleteBtn"
+               class="btn-delete">
+
                 Ya, Hapus
+
             </a>
+
         </div>
+
     </div>
+
 </div>
 
 <script>
-function openDeleteModal(element) {
-    const userId = element.getAttribute("data-id");
-    document.getElementById("confirmDeleteBtn").href = "/delete_user/" + userId;
-    document.getElementById("deleteModal").style.display = "flex";
+
+function openDeleteModal(element){
+
+    const userId =
+        element.getAttribute("data-id");
+
+    document.getElementById(
+        "confirmDeleteBtn"
+    ).href = "/delete_user/" + userId;
+
+    document.getElementById(
+        "deleteModal"
+    ).style.display = "flex";
 }
 
-function closeDeleteModal() {
-    document.getElementById("deleteModal").style.display = "none";
+function closeDeleteModal(){
+
+    document.getElementById(
+        "deleteModal"
+    ).style.display = "none";
 }
 
-// Klik luar modal untuk close
-window.onclick = function(event) {
-    const modal = document.getElementById("deleteModal");
-    if (event.target === modal) {
+window.onclick = function(event){
+
+    const modal =
+        document.getElementById("deleteModal");
+
+    if(event.target === modal){
+
         modal.style.display = "none";
     }
 }
+
 </script>
 
 {% endblock %}
