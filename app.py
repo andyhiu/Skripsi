@@ -53,7 +53,7 @@ class StokCabang(db.Model):
     material_id = db.Column(db.Integer)
     lokasi = db.Column(db.String(100))
     total_kubik = db.Column(db.Float, default=0)
-    
+
 class Keuangan(db.Model):
     __tablename__ = "keuangan"
 
@@ -324,23 +324,62 @@ def delete_user(id):
     flash("User berhasil dihapus", "success")
     return redirect(url_for('user'))
 # ================= MATERIAL =================
-
 @app.route('/material', methods=['GET','POST'])
 @login_required
 def material():
+
     if current_user.role != "admin":
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
+
+        nama = request.form['nama'].strip()
+        harga = request.form['harga']
+
+        # CEK DUPLIKAT MATERIAL
+        cek_material = Material.query.filter(
+            db.func.lower(Material.nama) == nama.lower()
+        ).first()
+
+        if cek_material:
+            flash(
+                f"Material '{nama}' sudah tersedia",
+                "warning"
+            )
+            return redirect(url_for('material'))
+
         m = Material(
-            nama=request.form['nama'],
-            harga=request.form['harga']
+            nama=nama,
+            harga=harga
         )
+
         db.session.add(m)
         db.session.commit()
-        return redirect(url_for('material'))
 
-    return render_template("material.html", data=Material.query.all())
+        flash(
+            "Material berhasil ditambahkan",
+            "success"
+        )
+
+        return redirect(url_for('material'))
+    # ================= SEARCH =================
+
+    search = request.args.get("search", "").strip()
+
+    query = Material.query
+
+    if search:
+        query = query.filter(
+            Material.nama.ilike(f"%{search}%")
+        )
+
+    data = query.order_by(Material.nama.asc()).all()
+
+    return render_template(
+        "material.html",
+        data=data,
+        search=search
+    )
 # ================= EDIT MATERIAL =================
 @app.route('/edit_material/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -998,51 +1037,187 @@ def laporan():
     if current_user.role != "admin":
         return redirect(url_for('dashboard'))
 
-    tanggal = request.args.get('tanggal')
-    cabang = request.args.get('cabang')
-    page = request.args.get('page', 1, type=int)
+    # ================= FILTER =================
+    mode = request.args.get("mode", "harian")
+
+    tanggal = request.args.get("tanggal")
+    bulan = request.args.get("bulan")
+    tahun = request.args.get("tahun")
+
+    cabang = request.args.get("cabang")
+
+    page = request.args.get("page", 1, type=int)
 
     query = Keuangan.query.filter(
         Keuangan.status == "Final"
     )
 
-    if tanggal:
-        try:
-            tanggal_obj = datetime.strptime(tanggal, "%Y-%m-%d").date()
-            query = query.filter(Keuangan.tanggal == tanggal_obj)
-        except ValueError:
-            flash("Format tanggal salah")
+    if mode == "harian":
+
+        if tanggal:
+            try:
+                tanggal_obj = datetime.strptime(
+                    tanggal,
+                    "%Y-%m-%d"
+                ).date()
+
+                query = query.filter(
+                    Keuangan.tanggal == tanggal_obj
+                )
+
+            except ValueError:
+                flash("Format tanggal salah")
+
+    elif mode == "bulanan":
+
+        if bulan and tahun:
+            query = query.filter(
+                db.extract("month", Keuangan.tanggal) == int(bulan),
+                db.extract("year", Keuangan.tanggal) == int(tahun)
+            )
+
+    elif mode == "tahunan":
+
+        if tahun:
+            query = query.filter(
+                db.extract("year", Keuangan.tanggal) == int(tahun)
+            )
 
     if cabang:
         query = query.filter(Keuangan.cabang == cabang)
 
+    # ================= SUMMARY =================
+
+    query_summary = Keuangan.query.filter(
+        Keuangan.status == "Final"
+    )
+
+    if mode == "harian":
+
+        if tanggal:
+            tanggal_obj = datetime.strptime(tanggal, "%Y-%m-%d").date()
+
+            query_summary = query_summary.filter(
+                Keuangan.tanggal == tanggal_obj
+            )
+
+    elif mode == "bulanan":
+
+        if bulan and tahun:
+            query_summary = query_summary.filter(
+                db.extract('month', Keuangan.tanggal) == int(bulan),
+                db.extract('year', Keuangan.tanggal) == int(tahun)
+            )
+
+    elif mode == "tahunan":
+
+        if tahun:
+            query_summary = query_summary.filter(
+                db.extract('year', Keuangan.tanggal) == int(tahun)
+            )
+
+    if cabang:
+        query_summary = query_summary.filter(
+            Keuangan.cabang == cabang
+        )
+
+    data_summary = query_summary.all()
+
+    total_pemasukan_bulan = sum(
+        d.jumlah
+        for d in data_summary
+        if d.tipe == "pemasukan"
+    )
+
+    total_pengeluaran_bulan = sum(
+        d.jumlah
+        for d in data_summary
+        if d.tipe == "pengeluaran"
+    )
+
+    total_profit_bulan = (
+            total_pemasukan_bulan -
+            total_pengeluaran_bulan
+    )
     # ambil semua data
     data = query.all()
 
-    # ================= GROUP BY CABANG + TANGGAL =================
-    laporan_dict = {}
+    # ================= MEMBENTUK DATA LAPORAN =================
 
-    for d in data:
-        key = (d.cabang, d.tanggal)
+    laporan_list = []
 
-        if key not in laporan_dict:
-            laporan_dict[key] = {
-                "cabang": d.cabang,
-                "tanggal": d.tanggal,
-                "total_pemasukan": 0,
-                "total_pengeluaran": 0
-            }
+    # ================= HARIAN =================
+    if mode == "harian":
 
-        if d.tipe == "pemasukan":
-            laporan_dict[key]["total_pemasukan"] += d.jumlah
+        laporan_dict = {}
 
-        elif d.tipe == "pengeluaran":
-            laporan_dict[key]["total_pengeluaran"] += d.jumlah
+        for d in data:
 
-    laporan_list = list(laporan_dict.values())
+            key = (d.cabang, d.tanggal)
 
-    # ================= SORT TERBARU =================
-    laporan_list.sort(key=lambda x: x["tanggal"], reverse=True)
+            if key not in laporan_dict:
+                laporan_dict[key] = {
+                    "cabang": d.cabang,
+                    "tanggal": d.tanggal,
+                    "total_pemasukan": 0,
+                    "total_pengeluaran": 0
+                }
+
+            if d.tipe == "pemasukan":
+                laporan_dict[key]["total_pemasukan"] += d.jumlah
+            else:
+                laporan_dict[key]["total_pengeluaran"] += d.jumlah
+
+        laporan_list = list(laporan_dict.values())
+
+        laporan_list.sort(
+            key=lambda x: x["tanggal"],
+            reverse=True
+        )
+
+    # ================= BULANAN =================
+    elif mode == "bulanan":
+
+        # Jangan diproses kalau filter belum lengkap
+        if bulan and tahun:
+            total_pemasukan = sum(
+                d.jumlah for d in data
+                if d.tipe == "pemasukan"
+            )
+
+            total_pengeluaran = sum(
+                d.jumlah for d in data
+                if d.tipe == "pengeluaran"
+            )
+
+            laporan_list.append({
+                "cabang": cabang if cabang else "Semua Cabang",
+                "bulan": int(bulan),
+                "tahun": int(tahun),
+                "total_pemasukan": total_pemasukan,
+                "total_pengeluaran": total_pengeluaran
+            })
+
+    # ================= TAHUNAN =================
+    elif mode == "tahunan":
+
+        if tahun:
+            total_pemasukan = sum(
+                d.jumlah for d in data
+                if d.tipe == "pemasukan"
+            )
+
+            total_pengeluaran = sum(
+                d.jumlah for d in data
+                if d.tipe == "pengeluaran"
+            )
+
+            laporan_list.append({
+                "cabang": cabang if cabang else "Semua Cabang",
+                "tahun": int(tahun),
+                "total_pemasukan": total_pemasukan,
+                "total_pengeluaran": total_pengeluaran
+            })
 
     # ================= PAGINATION MANUAL =================
     per_page = 5
@@ -1073,10 +1248,21 @@ def laporan():
 
     return render_template(
         "laporan_list.html",
+
         data=data_page,
         pagination=pagination,
+
+        mode=mode,
+
         tanggal=tanggal,
-        cabang=cabang
+        bulan=bulan,
+        tahun=tahun,
+
+        cabang=cabang,
+
+        total_pemasukan_bulan=total_pemasukan_bulan,
+        total_pengeluaran_bulan=total_pengeluaran_bulan,
+        total_profit_bulan=total_profit_bulan
     )
 # ================= DETAIL LAPORAN =================
 @app.route('/laporan_detail')
@@ -1223,24 +1409,58 @@ from reportlab.pdfgen import canvas
 @login_required
 def laporan_pdf():
 
-    cabang = request.args.get('cabang')
-    tanggal = request.args.get('tanggal')
-    tanggal_obj = datetime.strptime(tanggal, "%Y-%m-%d")
+    mode = request.args.get("mode", "harian")
+
+    cabang = request.args.get("cabang")
+
+    tanggal = request.args.get("tanggal")
+    bulan = request.args.get("bulan")
+    tahun = request.args.get("tahun")
+
+    tanggal_obj = None
+
+    if tanggal:
+        tanggal_obj = datetime.strptime(
+            tanggal,
+            "%Y-%m-%d"
+        ).date()
 
     # ================= DATA KEUANGAN =================
 
-    transaksi = Keuangan.query.filter_by(
-        cabang=cabang,
-        tanggal=tanggal_obj,
-        tipe="pemasukan",
-        status="Final"
+    query = Keuangan.query.filter(
+        Keuangan.status == "Final"
+    )
+
+    if cabang:
+        query = query.filter(
+            Keuangan.cabang == cabang
+        )
+
+    if mode == "harian":
+
+        query = query.filter(
+            Keuangan.tanggal == tanggal_obj
+        )
+
+    elif mode == "bulanan":
+
+        query = query.filter(
+            db.extract("month", Keuangan.tanggal) == int(bulan),
+            db.extract("year", Keuangan.tanggal) == int(tahun)
+        )
+
+    elif mode == "tahunan":
+
+        query = query.filter(
+            db.extract("year", Keuangan.tanggal) == int(tahun)
+        )
+
+    transaksi = query.filter(
+        Keuangan.tipe == "pemasukan"
     ).all()
 
-    pengeluaran = Keuangan.query.filter_by(
-        cabang=cabang,
-        tanggal=tanggal_obj,
-        tipe="pengeluaran",
-        status="Final"
+    pengeluaran = query.filter(
+        Keuangan.tipe == "pengeluaran"
     ).all()
 
     total_pemasukan = sum(t.jumlah for t in transaksi)
@@ -1279,7 +1499,17 @@ def laporan_pdf():
 
     # ================= TITLE =================
     elements.append(Paragraph("PT SAMPURNA ABADI MAKMUR", title_style))
-    elements.append(Paragraph("LAPORAN HARIAN MATERIAL", section_style))
+
+    if mode == "harian":
+        judul = "LAPORAN HARIAN MATERIAL"
+
+    elif mode == "bulanan":
+        judul = "LAPORAN BULANAN MATERIAL"
+
+    else:
+        judul = "LAPORAN TAHUNAN MATERIAL"
+
+    elements.append(Paragraph(judul, section_style))
     elements.append(Spacer(1, 0.2 * inch))
 
     elements.append(HRFlowable(width="100%", thickness=2,
@@ -1287,11 +1517,42 @@ def laporan_pdf():
     elements.append(Spacer(1, 0.3 * inch))
 
     # ================= INFO TABLE =================
-    info_data = [
-        ["Cabang", cabang],
-        ["Tanggal", tanggal]
-    ]
+    if mode == "harian":
 
+        info_data = [
+            ["Cabang", cabang],
+            ["Tanggal", tanggal]
+        ]
+
+    elif mode == "bulanan":
+
+        nama_bulan = [
+            "",
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember"
+        ]
+
+        info_data = [
+            ["Cabang", cabang],
+            ["Periode", f"{nama_bulan[int(bulan)]} {tahun}"]
+        ]
+
+    else:
+
+        info_data = [
+            ["Cabang", cabang],
+            ["Tahun", tahun]
+        ]
     info_table = Table(info_data, colWidths=[120, 350])
     info_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.whitesmoke),
@@ -1302,65 +1563,213 @@ def laporan_pdf():
     elements.append(info_table)
     elements.append(Spacer(1, 0.4 * inch))
 
-    # ================= TRANSAKSI =================
-    elements.append(Paragraph("TRANSAKSI", section_style))
-    elements.append(Spacer(1, 0.2 * inch))
+    # ================= ISI LAPORAN =================
 
-    transaksi_data = [["No", "Material", "Truck", "Kubikasi", "Metode", "Total"]]
+    if mode == "harian":
 
-    for i, t in enumerate(transaksi, start=1):
-        transaksi_data.append([
-            str(i),
-            t.material.nama,
-            t.jenis_truck,
-            f"{round(t.kubikasi,2)} m³",
-            t.metode,
-            f"Rp {format(int(t.jumlah), ',').replace(',', '.')}"
-        ])
+        elements.append(Paragraph("TRANSAKSI", section_style))
+        elements.append(Spacer(1, 0.2 * inch))
 
-    transaksi_table = Table(transaksi_data,
-                            colWidths=[30, 100, 100, 70, 70, 100])
+        transaksi_data = [["No", "Material", "Truck", "Kubikasi", "Metode", "Total"]]
 
-    transaksi_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0d3b66")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (3, 1), (-1, -1), 'CENTER'),
-        ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1),
-         [colors.whitesmoke, colors.transparent])
-    ]))
+        for i, t in enumerate(transaksi, start=1):
+            transaksi_data.append([
+                str(i),
+                t.material.nama,
+                t.jenis_truck,
+                f"{round(t.kubikasi, 2)} m³",
+                t.metode,
+                f"Rp {format(int(t.jumlah), ',').replace(',', '.')}"
+            ])
 
-    elements.append(transaksi_table)
-    elements.append(Spacer(1, 0.4 * inch))
+        transaksi_table = Table(
+            transaksi_data,
+            colWidths=[30, 100, 100, 70, 70, 100]
+        )
+
+        transaksi_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0d3b66")),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (3, 1), (-1, -1), 'CENTER'),
+            ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1),
+             [colors.whitesmoke, colors.transparent])
+        ]))
+
+        elements.append(transaksi_table)
+        elements.append(Spacer(1, 0.4 * inch))
+
+    elif mode == "bulanan":
+
+        elements.append(Paragraph("REKAP HARIAN", section_style))
+        elements.append(Spacer(1, 0.2 * inch))
+
+        rekap = {}
+
+        for t in transaksi:
+
+            if t.tanggal not in rekap:
+                rekap[t.tanggal] = {
+                    "pemasukan": 0,
+                    "pengeluaran": 0
+                }
+
+            rekap[t.tanggal]["pemasukan"] += t.jumlah
+
+        for p in pengeluaran:
+
+            if p.tanggal not in rekap:
+                rekap[p.tanggal] = {
+                    "pemasukan": 0,
+                    "pengeluaran": 0
+                }
+
+            rekap[p.tanggal]["pengeluaran"] += p.jumlah
+
+        transaksi_data = [
+            ["Tanggal", "Pemasukan", "Pengeluaran"]
+        ]
+
+        for tgl in sorted(rekap.keys()):
+            transaksi_data.append([
+
+                tgl.strftime("%d %b %Y"),
+
+                f"Rp {format(int(rekap[tgl]['pemasukan']), ',').replace(',', '.')}",
+
+                f"Rp {format(int(rekap[tgl]['pengeluaran']), ',').replace(',', '.')}"
+
+            ])
+
+        transaksi_table = Table(
+            transaksi_data,
+            colWidths=[160, 150, 150]
+        )
+
+        transaksi_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0d3b66")),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
+            ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1),
+             [colors.whitesmoke, colors.transparent])
+        ]))
+
+        elements.append(transaksi_table)
+        elements.append(Spacer(1, 0.4 * inch))
+
+    else:
+
+        elements.append(Paragraph("REKAP BULANAN", section_style))
+        elements.append(Spacer(1, 0.2 * inch))
+
+        nama_bulan = {
+            1: "Januari",
+            2: "Februari",
+            3: "Maret",
+            4: "April",
+            5: "Mei",
+            6: "Juni",
+            7: "Juli",
+            8: "Agustus",
+            9: "September",
+            10: "Oktober",
+            11: "November",
+            12: "Desember"
+        }
+
+        rekap = {}
+
+        for t in transaksi:
+
+            bln = t.tanggal.month
+
+            if bln not in rekap:
+                rekap[bln] = {
+                    "pemasukan": 0,
+                    "pengeluaran": 0
+                }
+
+            rekap[bln]["pemasukan"] += t.jumlah
+
+        for p in pengeluaran:
+
+            bln = p.tanggal.month
+
+            if bln not in rekap:
+                rekap[bln] = {
+                    "pemasukan": 0,
+                    "pengeluaran": 0
+                }
+
+            rekap[bln]["pengeluaran"] += p.jumlah
+
+        transaksi_data = [
+            ["Bulan", "Pemasukan", "Pengeluaran"]
+        ]
+
+        for bln in sorted(rekap.keys()):
+            transaksi_data.append([
+
+                nama_bulan[bln],
+
+                f"Rp {format(int(rekap[bln]['pemasukan']), ',').replace(',', '.')}",
+
+                f"Rp {format(int(rekap[bln]['pengeluaran']), ',').replace(',', '.')}"
+
+            ])
+
+        transaksi_table = Table(
+            transaksi_data,
+            colWidths=[160, 150, 150]
+        )
+
+        transaksi_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0d3b66")),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
+            ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1),
+             [colors.whitesmoke, colors.transparent])
+        ]))
+
+        elements.append(transaksi_table)
+        elements.append(Spacer(1, 0.4 * inch))
 
     # ================= PENGELUARAN =================
-    elements.append(Paragraph("PENGELUARAN", section_style))
-    elements.append(Spacer(1, 0.2 * inch))
 
-    pengeluaran_data = [["No", "Keterangan", "Jumlah"]]
+    if mode == "harian":
 
-    for i, p in enumerate(pengeluaran, start=1):
-        pengeluaran_data.append([
-            str(i),
-            p.keterangan,
-            f"Rp {format(int(p.jumlah), ',').replace(',', '.')}"
-        ])
+        elements.append(Paragraph("PENGELUARAN", section_style))
+        elements.append(Spacer(1, 0.2 * inch))
 
-    pengeluaran_table = Table(pengeluaran_data,
-                              colWidths=[40, 300, 130])
+        pengeluaran_data = [["No", "Keterangan", "Jumlah"]]
 
-    pengeluaran_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#198754")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (2, 1), (-1, -1), 'RIGHT'),
-        ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1),
-         [colors.whitesmoke, colors.transparent])
-    ]))
+        for i, p in enumerate(pengeluaran, start=1):
+            pengeluaran_data.append([
+                str(i),
+                p.keterangan,
+                f"Rp {format(int(p.jumlah), ',').replace(',', '.')}"
+            ])
 
-    elements.append(pengeluaran_table)
-    elements.append(Spacer(1, 0.4 * inch))
+        pengeluaran_table = Table(
+            pengeluaran_data,
+            colWidths=[40, 300, 130]
+        )
 
+        pengeluaran_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#198754")),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (2, 1), (-1, -1), 'RIGHT'),
+            ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
+            ('ROWBACKGROUNDS',
+             (0, 1),
+             (-1, -1),
+             [colors.whitesmoke, colors.transparent])
+        ]))
+
+        elements.append(pengeluaran_table)
+        elements.append(Spacer(1, 0.4 * inch))
     # ================= TOTAL BOX =================
     total_data = [
         ["Total Pemasukan",
@@ -1423,11 +1832,37 @@ def laporan_pdf():
 
     buffer.seek(0)
 
+    if mode == "harian":
+        nama_file = f"laporan_harian_{cabang}_{tanggal}.pdf"
+
+    elif mode == "bulanan":
+
+        nama_bulan = {
+            "1": "Januari",
+            "2": "Februari",
+            "3": "Maret",
+            "4": "April",
+            "5": "Mei",
+            "6": "Juni",
+            "7": "Juli",
+            "8": "Agustus",
+            "9": "September",
+            "10": "Oktober",
+            "11": "November",
+            "12": "Desember"
+        }
+
+        nama_file = f"laporan_bulanan_{cabang}_{nama_bulan[bulan]}_{tahun}.pdf"
+
+    else:
+
+        nama_file = f"laporan_tahunan_{cabang}_{tahun}.pdf"
+
     return send_file(
         buffer,
         as_attachment=True,
-        download_name=f"laporan_{cabang}_{tanggal}.pdf",
-        mimetype='application/pdf'
+        download_name=nama_file,
+        mimetype="application/pdf"
     )
 @app.route('/nota_kirim/<int:id>')
 @login_required
@@ -1633,7 +2068,7 @@ def nota_transaksi(id):
     info_table = Table([
         ["No Nota", f": #{transaksi.id}", "Tanggal", f": {transaksi.tanggal.strftime('%d-%m-%Y')}"],
         ["Cabang", f": {transaksi.cabang}", "Metode", f": {transaksi.metode or '-'}"],
-        ["Dibuat Oleh", f": {current_user.username}", "", ""]
+        ["Dibuat Oleh", f": Cabang {transaksi.cabang}", "", ""]
     ], colWidths=[120, 180, 100, 180])
 
     info_table.setStyle(TableStyle([

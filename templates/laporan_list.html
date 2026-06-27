@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <div class="laporan-page">
+
 <div class="laporan-header">
 
     <span class="laporan-badge">
@@ -15,71 +17,273 @@
     </p>
 
 </div>
+
+<!-- ================= SUMMARY CARD ================= -->
+
+<div class="laporan-summary-grid">
+
+    <div class="laporan-summary-card pemasukan-card">
+
+        <span>
+            {% if mode == "harian" %}
+            Total Pemasukan Harian
+            {% elif mode == "bulanan" %}
+            Total Pemasukan Bulanan
+            {% else %}
+            Total Pemasukan Tahunan
+            {% endif %}
+            </span>
+
+        <h3>
+            Rp {{ "{:,.0f}".format(total_pemasukan_bulan).replace(",", ".") }}
+        </h3>
+
+    </div>
+
+    <div class="laporan-summary-card pengeluaran-card">
+
+       <span>
+            {% if mode == "harian" %}
+            Total Pengeluaran Harian
+            {% elif mode == "bulanan" %}
+            Total Pengeluaran Bulanan
+            {% else %}
+            Total Pengeluaran Tahunan
+            {% endif %}
+            </span>
+
+        <h3>
+            Rp {{ "{:,.0f}".format(total_pengeluaran_bulan).replace(",", ".") }}
+        </h3>
+
+    </div>
+
+    <div class="laporan-summary-card profit-card">
+
+       <span>
+            {% if mode == "harian" %}
+            Total Profit Harian
+            {% elif mode == "bulanan" %}
+            Total Profit Bulanan
+            {% else %}
+            Total Profit Tahunan
+            {% endif %}
+            </span>
+
+        <h3>
+            Rp {{ "{:,.0f}".format(total_profit_bulan).replace(",", ".") }}
+        </h3>
+
+    </div>
+
+</div>
+
 <div class="split-layout">
 
     <!-- ================= LEFT SIDE (FILTER) ================= -->
+
     <div class="split-left">
+
         <div class="form-box premium-laporan-form">
-            <form method="GET" class="form-grid">
 
-                <div>
-                    <label>Pilih Tanggal</label>
-                    <input type="text"
-                           name="tanggal"
-                           class="datepicker"
-                           placeholder="Pilih tanggal"
-                           value="{{ tanggal or '' }}">
-                </div>
+<form method="GET" class="form-grid">
 
-                <div>
-                    <label>Pilih Cabang</label>
-                    <select name="cabang">
-                        <option value="">
-                            Pilih cabang
-                        </option>
-                        <option value="Tuban"
-                            {% if cabang=="Tuban" or not cabang %}
-                                selected
-                            {% endif %}>
-                            Tuban
-                        </option>
-                        <option value="Mahendradatta"
-                            {% if cabang =="Mahendradatta" %}selected{% endif %}>
-                            Mahendradatta
-                        </option>
-                    </select>
-                </div>
+    <div>
+        <label>Jenis Laporan</label>
 
-                <div class="full button-wrapper">
-                    <button type="submit">Filter Laporan</button>
-                </div>
+        <select name="mode" onchange="this.form.submit()">
 
-            </form>
+            <option value="harian"
+                {% if mode=="harian" %}selected{% endif %}>
+                Harian
+            </option>
+
+            <option value="bulanan"
+                {% if mode=="bulanan" %}selected{% endif %}>
+                Bulanan
+            </option>
+
+            <option value="tahunan"
+                {% if mode=="tahunan" %}selected{% endif %}>
+                Tahunan
+            </option>
+
+        </select>
+    </div>
+
+    {% if mode=="harian" %}
+
+    <div>
+
+        <label>Tanggal</label>
+
+        <input
+            type="text"
+            class="datepicker"
+            name="tanggal"
+            value="{{ tanggal or '' }}"
+            placeholder="Pilih tanggal">
+
+    </div>
+
+    {% elif mode=="bulanan" %}
+
+    <div>
+
+        <label>Bulan</label>
+
+        <select name="bulan">
+
+            {% for b in range(1,13) %}
+
+            <option
+                value="{{ b }}"
+                {% if bulan|int==b %}selected{% endif %}>
+
+                {{ [
+                '',
+                'Januari',
+                'Februari',
+                'Maret',
+                'April',
+                'Mei',
+                'Juni',
+                'Juli',
+                'Agustus',
+                'September',
+                'Oktober',
+                'November',
+                'Desember'
+                ][b] }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Tahun</label>
+
+        <input
+            type="number"
+            name="tahun"
+            value="{{ tahun or '' }}">
+
+    </div>
+
+    {% else %}
+
+    <div>
+
+        <label>Tahun</label>
+
+        <input
+            type="number"
+            name="tahun"
+            value="{{ tahun or '' }}">
+
+    </div>
+
+    {% endif %}
+
+    <div>
+
+        <label>Cabang</label>
+
+        <select name="cabang">
+
+            <option value="">Semua Cabang</option>
+
+            <option
+                value="Tuban"
+                {% if cabang=="Tuban" %}selected{% endif %}>
+
+                Tuban
+
+            </option>
+
+            <option
+                value="Mahendradatta"
+                {% if cabang=="Mahendradatta" %}selected{% endif %}>
+
+                Mahendradatta
+
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="full button-wrapper">
+
+        <button type="submit">
+
+            Filter Laporan
+
+        </button>
+
+    </div>
+
+</form>
+
         </div>
+
     </div>
 
     <!-- ================= RIGHT SIDE (TABLE) ================= -->
+
     <div class="split-right">
+
         <div class="card">
 
             {% if data %}
 
             <div class="table-responsive">
+
                 <table class="premium-table">
-                    <thead>
+
+                        <thead>
+
                         <tr>
+
                             <th>No</th>
+
                             <th>Cabang</th>
-                            <th>Tanggal</th>
+
+                        {% if mode=="harian" %}
+
+                        <th>Tanggal</th>
+
+                        {% elif mode=="bulanan" %}
+
+                        <th>Periode</th>
+
+                        {% else %}
+
+                        <th>Tahun</th>
+
+                        {% endif %}
+
                             <th>Total Pemasukan</th>
+
                             <th>Total Pengeluaran</th>
+
                             <th>Aksi</th>
+
                         </tr>
-                    </thead>
+
+                        </thead>
+
                     <tbody>
 
                         {% for l in data %}
+
                         <tr>
+
                             <td>
                                 {{ loop.index + ((pagination.page - 1) * 10) }}
                             </td>
@@ -88,90 +292,203 @@
                                 {{ l.cabang }}
                             </td>
 
-                            <!-- 🔥 FIX -->
-                            <td style="white-space: nowrap;">
-                                {{ l.tanggal.strftime('%d %b %Y') }}
-                            </td>
+                        <td style="white-space: nowrap;">
 
-                            <!-- 🔥 FIX -->
+                        {% if mode=="harian" %}
+
+                            {{ l.tanggal.strftime('%d %b %Y') }}
+
+                        {% elif mode=="bulanan" %}
+
+                            {{ [
+                            '',
+                            'Januari',
+                            'Februari',
+                            'Maret',
+                            'April',
+                            'Mei',
+                            'Juni',
+                            'Juli',
+                            'Agustus',
+                            'September',
+                            'Oktober',
+                            'November',
+                            'Desember'
+                            ][l.bulan] }}
+                            {{ l.tahun }}
+
+                        {% else %}
+
+                            {{ l.tahun }}
+
+                        {% endif %}
+
+                        </td>
+
                             <td style="white-space: nowrap;">
                                 Rp {{ "{:,.0f}".format(l.total_pemasukan).replace(",", ".") }}
                             </td>
 
-                            <!-- 🔥 FIX -->
                             <td style="white-space: nowrap;">
                                 Rp {{ "{:,.0f}".format(l.total_pengeluaran).replace(",", ".") }}
                             </td>
 
                             <td>
-                                <a href="{{ url_for('laporan_detail',
-                                         cabang=l.cabang,
-                                         tanggal=l.tanggal.strftime('%Y-%m-%d')) }}"
-                                   class="btn-primary"
-                                   style="text-decoration:none;">
-                                    📄 Lihat Detail
-                                </a>
-                            </td>
+                        <td>
+
+                        {% if mode=="harian" %}
+
+                        <a href="{{ url_for(
+                            'laporan_detail',
+                            cabang=l.cabang,
+                            tanggal=l.tanggal.strftime('%Y-%m-%d')
+                        ) }}"
+                        class="btn-primary"
+                        style="text-decoration:none;">
+
+                        📄 Lihat Detail
+
+                        </a>
+
+                        {% elif mode=="bulanan" %}
+
+                        <a href="{{ url_for(
+                            'laporan_pdf',
+                            mode='bulanan',
+                            cabang=l.cabang,
+                            bulan=bulan,
+                            tahun=tahun
+                        ) }}"
+                        class="btn-success"
+                        style="text-decoration:none;">
+
+                        ⬇ Download PDF
+
+                        </a>
+
+                        {% else %}
+
+                        <a href="{{ url_for(
+                            'laporan_pdf',
+                            mode='tahunan',
+                            cabang=l.cabang,
+                            tahun=tahun
+                        ) }}"
+                        class="btn-success"
+                        style="text-decoration:none;">
+
+                        ⬇ Download PDF
+
+                        </a>
+
+                        {% endif %}
+
+                        </td>
+
                         </tr>
+
                         {% endfor %}
 
                     </tbody>
+
                 </table>
+
             </div>
 
             <!-- ================= PAGINATION ================= -->
+
             {% if pagination.pages > 1 %}
+
             <div class="pagination-modern">
 
                 {% if pagination.has_prev %}
-                    <a href="{{ url_for('laporan',
-                        page=pagination.prev_num,
-                        tanggal=tanggal if tanggal else None,
-                        cabang=cabang if cabang else None) }}">
+
+                    <a href="{{ url_for(
+                        'laporan',
+                        page=pagination.page-1,
+                        mode=mode,
+                        tanggal=tanggal,
+                        bulan=bulan,
+                        tahun=tahun,
+                        cabang=cabang
+                    ) }}">
                         ← Prev
                     </a>
+
                 {% endif %}
 
                 {% for p in range(1, pagination.pages + 1) %}
+
                     {% if p == pagination.page %}
-                        <span class="active-page">{{ p }}</span>
+
+                        <span class="active-page">
+                            {{ p }}
+                        </span>
+
                     {% else %}
-                        <a href="{{ url_for('laporan',
+
+                        <a href="{{ url_for(
+                            'laporan',
                             page=p,
-                            tanggal=tanggal if tanggal else None,
-                            cabang=cabang if cabang else None) }}">
+                            mode=mode,
+                            tanggal=tanggal,
+                            bulan=bulan,
+                            tahun=tahun,
+                            cabang=cabang
+                        ) }}">
                             {{ p }}
                         </a>
+
                     {% endif %}
+
                 {% endfor %}
 
                 {% if pagination.has_next %}
-                    <a href="{{ url_for('laporan',
-                        page=pagination.next_num,
-                        tanggal=tanggal if tanggal else None,
-                        cabang=cabang if cabang else None) }}">
+
+                    <a href="{{ url_for(
+                        'laporan',
+                        page=pagination.page+1,
+                        mode=mode,
+                        tanggal=tanggal,
+                        bulan=bulan,
+                        tahun=tahun,
+                        cabang=cabang
+                    ) }}">
                         Next →
                     </a>
+
                 {% endif %}
 
             </div>
+
             {% endif %}
 
             {% else %}
 
             <div class="empty-state" style="padding:40px 20px;">
-                <div class="empty-icon" style="font-size:40px;">📑</div>
-                <h3 style="margin-top:15px;">Belum ada laporan</h3>
+
+                <div class="empty-icon" style="font-size:40px;">
+                    📑
+                </div>
+
+                <h3 style="margin-top:15px;">
+                    Belum ada laporan
+                </h3>
+
                 <p style="color:#666;">
                     Gunakan filter di sebelah kiri untuk mencari laporan.
                 </p>
+
             </div>
 
             {% endif %}
 
         </div>
+
     </div>
 
 </div>
+
 </div>
+
 {% endblock %}

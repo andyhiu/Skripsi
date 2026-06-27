@@ -9154,6 +9154,149 @@ body.dark-mode .laporan-modern-datepicker {
     justify-content: center;
     width: 100%;
 }
+/* ================= SEARCH MATERIAL ================= */
+.material-search-form{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.material-search-form input{
+    flex:1;
+    height:48px;
+    padding:0 18px;
+    border:1px solid #dbe2ea;
+    border-radius:12px;
+    font-size:14px;
+    background:#fff;
+    transition:.25s ease;
+}
+
+.material-search-form input:focus{
+    outline:none;
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+
+/* tombol cari lebih ramping */
+.material-search-form .btn-primary{
+    height:48px;
+    min-width:110px;
+    padding:0 22px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:14px;
+    font-weight:600;
+}
+
+/* tombol reset */
+.btn-reset{
+    height:48px;
+    min-width:100px;
+    padding:0 20px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+/* ========================================= */
+/* SUMMARY LAPORAN */
+/* ========================================= */
+
+.laporan-summary-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:24px;
+
+    margin-bottom:32px;
+}
+
+.laporan-summary-card{
+
+    padding:26px;
+
+    border-radius:24px;
+
+    background:#fff;
+
+    box-shadow:
+        0 15px 35px rgba(15,23,42,0.08);
+
+    border:1px solid rgba(0,0,0,0.04);
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+.laporan-summary-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:5px;
+}
+
+.pemasukan-card::before{
+
+    background:#22c55e;
+}
+
+.pengeluaran-card::before{
+
+    background:#ef4444;
+}
+
+.profit-card::before{
+
+    background:#2563eb;
+}
+
+.laporan-summary-card span{
+
+    display:block;
+
+    font-size:14px;
+
+    color:#64748b;
+
+    margin-bottom:10px;
+}
+
+.laporan-summary-card h3{
+
+    margin:0;
+
+    font-size:28px;
+
+    font-weight:800;
+
+    color:#0f172a;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .laporan-summary-grid{
+
+        grid-template-columns:1fr;
+    }
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
 }

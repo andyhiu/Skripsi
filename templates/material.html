@@ -99,7 +99,30 @@
                 </span>
 
             </div>
+                <form method="GET" class="material-search-form">
 
+                    <input type="text"
+                           name="search"
+                           placeholder="Cari material..."
+                           value="{{ search }}">
+
+                    <button type="submit"
+                            class="btn-primary">
+
+                        🔍 Cari
+
+                    </button>
+
+                    {% if search %}
+                    <a href="{{ url_for('material') }}"
+                       class="btn-action btn-danger">
+
+                        Reset
+
+                    </a>
+                    {% endif %}
+
+                </form>
             <div class="table-responsive">
 
                 <table class="global-table">
@@ -128,7 +151,7 @@
                                 <div class="material-info-cell">
 
                                     <div class="material-icon">
-                                        📦
+                                        🚚
                                     </div>
 
                                     <span>
